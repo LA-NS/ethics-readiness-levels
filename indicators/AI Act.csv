@@ -1,0 +1,34 @@
+number;question;Yes score;No score;
+1;Is performance of the AI system evaluated and documented?;0,00;-0,40;Q1
+1.1;Is the AI system performance continuously evaluated during normal operation?;0,00;-0,14;
+1.1.1;Is a description of the risk management system included in the technical documentation?;0,00;-0,07;
+1.1.2;Does technical documentation include changes made to the system through its lifecycle?;0,00;-0,07;
+1.2;Does technical documentation include information about energy consumption?;0,00;-0,06;
+1.3;Does technical documentation address the monitoring, functioning, and control of the AI system?;0,00;-0,20;
+2;Do users get sufficient information about the methods and capabilities of the AI system?;0,00;-0,55;Q2
+2.1;Does the AI system make users aware that they are communicating or interacting with the AI system?;0,00;-0,20;
+2.2;Does the AI system inform users of its limitations?;0,00;-0,20;
+2.3;Are affected persons informed about their rights?;0,00;-0,15;
+3;Do decisions or outputs of the AI system influence or affect humans directly?;-0,67;0,00;Q3
+3.1;Did you establish detection and response mechanisms for undesirable effects, for example false negatives or false positives?;0,20;0,00;
+3.1.1;Is there a ‘stop button’ (if relevant) or a procedure for humans to safely abort operation of the AI system?;0,00;-0,06;
+3.2;Can the AI system be controlled or overseen by humans during normal operation?;0,27;0,00;
+3.2.1;Have you thoroughly evaluated the efficacy of oversight measures during normal operation?;0,00;-0,27;
+3.2.1.1;Were humans offered training on how to exercise control?;0,00;-0,27;
+3.3;Have you implemented sufficient technical measures to facilitate explicability of the outputs?;0,20;0,00;
+3.3.1;Do these technical measures meet benchmarks and industry standards?;0,00;0,15;
+4;Can the AI system be attacked resulting in unintended or unexpected harm?;-0,79;0,00;Q4
+4.1;Is the training and application data stored securily with standard and robust authorisation and encryption requirements?;0,23;0,00;
+4.2;Is the AI system robust against AI-specific adversarial attacks?;0,25;0,00;
+4.3;Is the AI system resilient against model extraction and model replication attacks?;0,23;0,00;
+4.4;Does the AI system have a functionality to report incidents or breaches to relevant authorities?;0,08;;
+5;Was there training to ensure sufficient AI literacy of the users?;0,00;-0,55;Q5
+5.1;Was the training specifically adapted and contextualized for the use case?;0,03;;
+5.2;Does the training include basic concepts of machine learning and AI ethics?;0,02;;
+5.3;Was the AI literacy of affected persons taken into account during the system's deployment?;0,005;;
+6;Is your AI system trained on datasets involving humans or human characteristics?;-1,04;0,00;Q6
+6.1;When selecting data for training, did you consider human diversity?;0,78;0,00;
+6.1.1;Have you measured diversity indicators using quantitative metrics?;0,00;-0,52;
+6.1.2;Have you mitigated biases in the data found during testing?;0,00;-0,26;
+6.2;Are there mechanisms in place for users to report fairness issues or discrimination?;0,26;0,00;
+;;;;
