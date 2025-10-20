@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPERL Assessment Tool</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        .progress-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card.question-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card.question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .question-header {
+            margin-bottom: 2rem;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--gray-900);
+            line-height: 1.5;
+        }
+
+        .answer-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .answer-btn {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 1.25rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 60px;
+        }
+
+        .answer-btn:hover {
+            border-color: var(--primary);
+            background: var(--gray-50);
+            transform: translateY(-1px);
+        }
+
+        .answer-btn.yes {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .answer-btn.yes:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .answer-btn.no {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .answer-btn.no:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        .answer-btn.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+            transform: scale(1.02);
+        }
+
+        .answer-btn.selected.yes {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .answer-btn.selected.no {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .setup-form {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .determining-questions {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .determining-questions legend {
+            font-weight: 600;
+            color: var(--gray-800);
+            padding: 0 1rem;
+        }
+
+        .question-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .question-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-group p {
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .radio-option {
+            flex: 1;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .radio-option label:hover {
+            border-color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-spinner {
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .results h2 {
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .final-score {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin: 2rem 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .answer-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> LPERL Assessment</h1>
+            <p class="subtitle">Legal, Privacy & Ethical Readiness Level Evaluation</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-info">
+                <span id="progressText">Question 1 of X</span>
+                <div class="score-display">
+                    <i class="fas fa-star"></i>
+                    <span id="currentScore">Score: 4.0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Processing your response...</p>
+        </div>
+
+        <!-- Question Card -->
+        <div class="card question-card hidden" id="questionCard">
+            <div class="question-header">
+                <div class="question-number" id="questionNumber">Question #</div>
+                <div class="question-text" id="questionText"></div>
+            </div>
+            <div class="answer-buttons">
+                <button class="answer-btn yes" id="yesBtn" onclick="submitAnswer('yes')">
+                    <i class="fas fa-check"></i>
+                    <span>Yes</span>
+                </button>
+                <button class="answer-btn no" id="noBtn" onclick="submitAnswer('no')">
+                    <i class="fas fa-times"></i>
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Setup Form -->
+        <div class="setup-form" id="setupForm">
+            <form id="determiningForm">
+                <div class="form-group">
+                    <label class="form-label" for="name">Your Name:</label>
+                    <input type="text" class="form-input" id="name" name="name" required placeholder="Enter your name">
+                </div>
+
+                <fieldset class="determining-questions">
+                    <legend>Project Classification Questions</legend>
+                    
+                    <div class="question-group">
+                        <p>Is your product created for Law Enforcement Agencies (LEAs)?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="productForLEAsYes" name="product_for_LEAs" value="yes">
+                                <label for="productForLEAsYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="productForLEAsNo" name="product_for_LEAs" value="no" checked>
+                                <label for="productForLEAsNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-group" id="personalDataQuestion" style="display: none;">
+                        <p>Does your product use personal data?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="usesPersonalDataYes" name="uses_personal_data" value="yes">
+                                <label for="usesPersonalDataYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="usesPersonalDataNo" name="uses_personal_data" value="no" checked>
+                                <label for="usesPersonalDataNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p>Does your product use Artificial Intelligence?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="usesAIYes" name="uses_AI" value="yes">
+                                <label for="usesAIYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="usesAINo" name="uses_AI" value="no" checked>
+                                <label for="usesAINo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="start-btn">
+                    <i class="fas fa-play"></i>
+                    Start Assessment
+                </button>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div class="card hidden" id="resultsCard">
+            <div class="results" id="resultsContent">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionCount = 0;
+        let totalQuestions = 0;
+        let isProcessing = false;
+
+        $(document).ready(function() {
+            // LEA question change handler
+            $("input[name='product_for_LEAs']").change(function() {
+                if ($('#productForLEAsNo').is(':checked')) {
+                    $('#personalDataQuestion').show();
+                } else {
+                    $('#personalDataQuestion').hide();
+                }
+            });
+
+            // Setup form submission
+            $('#determiningForm').on('submit', function(event) {
+                event.preventDefault();
+                if (isProcessing) return;
+                
+                showLoading();
+                isProcessing = true;
+                
+                $.ajax({
+                    url: '/determine_blocks',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function() {
+                        hideLoading();
+                        $('#setupForm').addClass('hidden');
+                        $('#progressContainer').show();
+                        getNextQuestion();
+                    },
+                    error: function() {
+                        hideLoading();
+                        showError('Error starting assessment. Please try again.');
+                    },
+                    complete: function() {
+                        isProcessing = false;
+                    }
+                });
+            });
+        });
+
+        function submitAnswer(answer) {
+            if (isProcessing) return;
+            
+            // Visual feedback
+            const selectedBtn = answer === 'yes' ? $('#yesBtn') : $('#noBtn');
+            const otherBtn = answer === 'yes' ? $('#noBtn') : $('#yesBtn');
+            
+            selectedBtn.addClass('selected');
+            otherBtn.removeClass('selected');
+            
+            // Disable buttons temporarily
+            $('.answer-btn').prop('disabled', true);
+            isProcessing = true;
+            
+            setTimeout(() => {
+                showLoading();
+                
+                $.ajax({
+                    url: '/answer',
+                    type: 'POST',
+                    data: { answer: answer },
+                    dataType: 'json',
+                    success: function(response) {
+                        hideLoading();
+                        updateScore(response.score);
+                        currentQuestionCount++;
+                        getNextQuestion();
+                    },
+                    error: function() {
+                        hideLoading();
+                        showError('Error submitting answer. Please try again.');
+                        $('.answer-btn').prop('disabled', false);
+                        $('.answer-btn').removeClass('selected');
+                    },
+                    complete: function() {
+                        isProcessing = false;
+                    }
+                });
+            }, 300); // Small delay for visual feedback
+        }
+
+        function getNextQuestion() {
+            showLoading();
+            
+            $.ajax({
+                url: '/question',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    hideLoading();
+                    
+                    if (response.question) {
+                        displayQuestion(response.question, response.score);
+                        updateProgress();
+                    } else {
+                        displayResults(response);
+                    }
+                },
+                error: function() {
+                    hideLoading();
+                    showError('Error loading question. Please try again.');
+                }
+            });
+        }
+
+        function displayQuestion(question, score) {
+            $('#questionNumber').text(`Question ${question.number}`);
+            $('#questionText').text(question.question);
+            updateScore(score);
+            
+            // Reset button states
+            $('.answer-btn').removeClass('selected').prop('disabled', false);
+            
+            // Show question card with animation
+            $('#questionCard').removeClass('hidden');
+            
+            // Smooth scroll to question
+            $('html, body').animate({
+                scrollTop: $('#questionCard').offset().top - 100
+            }, 300);
+        }
+
+        function displayResults(response) {
+            $('#questionCard').addClass('hidden');
+            $('#progressContainer').hide();
+            
+            let resultsHtml = `
+                <div class="results">
+                    <h2><i class="fas fa-trophy"></i> Assessment Complete!</h2>
+                    <div class="final-score">
+                        Final Score: ${response.score} (${response.final_level})
+                    </div>
+                    <div class="result-message">
+                        <p>${response.message}</p>
+                    </div>
+            `;
+            
+            if (response.has_graph && response.graph) {
+                resultsHtml += `
+                    <div style="margin-top: 2rem;">
+                        <h3>Score Progression</h3>
+                        <img src="${response.graph}" alt="Score Progression Graph" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 1rem;">
+                    </div>
+                `;
+            } else {
+                resultsHtml += `
+                    <div style="margin-top: 2rem; padding: 1rem; background: var(--gray-100); border-radius: 8px;">
+                        <p><small><i class="fas fa-info-circle"></i> Install matplotlib to see detailed score progression graphs</small></p>
+                    </div>
+                `;
+            }
+            
+            resultsHtml += `
+                    <button onclick="restartAssessment()" class="start-btn" style="margin-top: 2rem;">
+                        <i class="fas fa-redo"></i> Start New Assessment
+                    </button>
+                </div>
+            `;
+            
+            $('#resultsContent').html(resultsHtml);
+            $('#resultsCard').removeClass('hidden');
+            
+            // Smooth scroll to results
+            $('html, body').animate({
+                scrollTop: $('#resultsCard').offset().top - 100
+            }, 300);
+        }
+
+        function updateScore(score) {
+            $('#currentScore').text(`Score: ${parseFloat(score).toFixed(1)}`);
+            
+            // Add color coding based on score
+            const scoreElement = $('#currentScore').parent();
+            scoreElement.removeClass('score-excellent score-good score-fair score-poor');
+            
+            if (score >= 3.5) scoreElement.addClass('score-excellent');
+            else if (score >= 2.5) scoreElement.addClass('score-good');
+            else if (score >= 1.5) scoreElement.addClass('score-fair');
+            else scoreElement.addClass('score-poor');
+        }
+
+        function updateProgress() {
+            // This is a simple progress indicator
+            // In a real implementation, you'd track the actual progress
+            const progress = Math.min((currentQuestionCount / 20) * 100, 95); // Estimate based on question count
+            $('#progressFill').css('width', progress + '%');
+            $('#progressText').text(`Question ${currentQuestionCount + 1}`);
+        }
+
+        function showLoading() {
+            $('#loading').show();
+            $('#questionCard').addClass('hidden');
+        }
+
+        function hideLoading() {
+            $('#loading').hide();
+        }
+
+        function showError(message) {
+            // Simple error display - could be enhanced with a proper modal
+            alert(message);
+        }
+
+        function restartAssessment() {
+            location.reload();
+        }
+
+        // Add score color styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .score-excellent { color: var(--success) !important; }
+            .score-good { color: var(--primary) !important; }
+            .score-fair { color: var(--warning) !important; }
+            .score-poor { color: var(--danger) !important; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

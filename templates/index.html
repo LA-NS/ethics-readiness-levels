@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethics Readiness Levels Tool</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: ivory;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header styles */
+        header {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background-color: ivory;
+            border-bottom: 1px solid #ccc;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        header .subtitle {
+            margin: 10px 0 0 0;
+            color: #666;
+        }
+
+        /* Container styles */
+        .container {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        /* Main content styles */
+        main {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Progress styles */
+        .progress-container {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-text {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .score-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #333;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Question card styles */
+        .card {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .question-card {
+            text-align: left;
+        }
+
+        .question-header {
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            background: #333;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        /* Answer button styles */
+        .answer-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .answer-btn {
+            background: #fff;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .answer-btn:hover {
+            border-color: #666;
+            background-color: #f9f9f9;
+        }
+
+        .answer-btn.selected {
+            border-color: #333;
+            background-color: #333;
+            color: white;
+        }
+
+        /* Setup form styles */
+        .setup-form {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .determining-questions {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .determining-questions legend {
+            font-weight: bold;
+            color: #333;
+            padding: 0 10px;
+        }
+
+        .question-group {
+            margin-bottom: 15px;
+        }
+
+        .question-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-group p {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .radio-option {
+            flex: 1;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .radio-option label:hover {
+            border-color: #666;
+            background: #f9f9f9;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: #333;
+            border-color: #333;
+            color: white;
+        }
+
+        .start-btn {
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .start-btn:hover {
+            background: #555;
+        }
+
+        /* Loading styles */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #ddd;
+            border-top: 3px solid #333;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Results styles */
+        .results {
+            display: none;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .results-header p {
+            color: #666;
+        }
+
+        .score-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .score-card {
+            background: #333;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .score-card h3 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .score-card .score {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .restart-btn {
+            background: #fff;
+            color: #333;
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .restart-btn:hover {
+            background: #333;
+            color: white;
+        }
+
+        /* Footer styles */
+        footer {
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            background-color: ivory;
+            border-top: 1px solid #ccc;
+            margin-top: auto;
+        }
+
+        footer p {
+            margin: 0;
+            color: #333;
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .answer-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .score-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Ethics Readiness Levels Tool</h1>
+            <p class="subtitle">A four-level, iterative method to track how ethical reflection is implemented in the design of AI systems</p>
+            <p style="margin: 5px 0; font-size: 0.8rem; color: #888;">Version 0.1</p>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; color: #555;">
+                <p style="margin: 0 0 10px 0; font-weight: bold;">Based on the research paper:</p>
+                <p style="margin: 0 0 10px 0; font-style: italic;">"Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method" (under review)</p>
+                
+                <p style="margin: 10px 0 5px 0; font-weight: bold;">Authors:</p>
+                <p style="margin: 0 0 10px 0;">Laurynas Adomaitis (RISE), Vincent Israel-Jost (CEA-Saclay/Larsim), Alexei Grinbaum (CEA-Saclay/Larsim)</p>
+                
+                <p style="margin: 10px 0 5px 0; font-weight: bold;">Implementation & Hosting:</p>
+                <p style="margin: 0 0 10px 0;">This tool implementation is developed and hosted by RISE (Research Institutes of Sweden)</p>
+                
+                <p style="margin: 10px 0 5px 0; font-weight: bold;">Funding:</p>
+                <p style="margin: 0;">This research has been funded by the AIOLIA project (European Commission Grant Agreement 101187937) and was part of the MultiRATE EU Horizon project (Grant Agreement 101073929).</p>
+            </div>
+        </div>
+
+        <!-- Setup Section -->
+        <div id="setup" class="setup-form">
+            <form id="determiningForm">
+                <fieldset class="determining-questions">
+                    <legend>Initial Questions</legend>
+                    
+                    <div class="question-group">
+                        <p>Is your product/service intended for Law Enforcement Agencies?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="productForLEAsYes" name="product_for_LEAs" value="yes">
+                                <label for="productForLEAsYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="productForLEAsNo" name="product_for_LEAs" value="no">
+                                <label for="productForLEAsNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-group" id="personalDataQuestion" style="display: none;">
+                        <p>Does your product/service use personal data?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="usesPersonalDataYes" name="uses_personal_data" value="yes">
+                                <label for="usesPersonalDataYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="usesPersonalDataNo" name="uses_personal_data" value="no">
+                                <label for="usesPersonalDataNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p>Does your product/service use AI?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="usesAIYes" name="uses_AI" value="yes">
+                                <label for="usesAIYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="usesAINo" name="uses_AI" value="no">
+                                <label for="usesAINo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="start-btn">Start Assessment</button>
+            </form>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progress-container" class="progress-container">
+            <div class="progress-info">
+                <span class="progress-text" id="progress-text">Progress</span>
+                <span class="score-display" id="current-score">Score: 4.0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Question Section -->
+        <div id="question-card" class="card question-card hidden">
+            <div class="question-header">
+                <span class="question-number" id="question-number">Question 1</span>
+            </div>
+            <div class="question-text" id="question-text">Loading...</div>
+            <div class="answer-buttons">
+                <button class="answer-btn" id="yes-btn" onclick="submitAnswer('yes')">
+                    Yes
+                </button>
+                <button class="answer-btn" id="no-btn" onclick="submitAnswer('no')">
+                    No
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-card" class="card hidden">
+            <div id="results-content">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Ethics Readiness Levels Tool v0.1 - Implemented and hosted by RISE (Research Institutes of Sweden)</p>
+    </footer>
+
+    <script>
+        let currentQuestionCount = 0;
+        let totalQuestions = 0;
+        let isProcessing = false;
+
+        $(document).ready(function() {
+            // LEA question change handler
+            $("input[name='product_for_LEAs']").change(function() {
+                if ($('#productForLEAsNo').is(':checked')) {
+                    $('#personalDataQuestion').show();
+                } else {
+                    $('#personalDataQuestion').hide();
+                }
+            });
+
+            // Setup form submission
+            $('#determiningForm').on('submit', function(event) {
+                event.preventDefault();
+                if (isProcessing) return;
+                
+                showLoading();
+                isProcessing = true;
+                
+                $.ajax({
+                    url: '/determine_blocks',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function() {
+                        hideLoading();
+                        $('#setup').hide();
+                        $('#progress-container').show();
+                        getNextQuestion();
+                    },
+                    error: function() {
+                        hideLoading();
+                        showError('Error starting assessment. Please try again.');
+                    },
+                    complete: function() {
+                        isProcessing = false;
+                    }
+                });
+            });
+        });
+
+        function submitAnswer(answer) {
+            if (isProcessing) return;
+            
+            // Visual feedback
+            const selectedBtn = answer === 'yes' ? $('#yes-btn') : $('#no-btn');
+            const otherBtn = answer === 'yes' ? $('#no-btn') : $('#yes-btn');
+            
+            selectedBtn.addClass('selected');
+            otherBtn.removeClass('selected');
+            
+            // Disable buttons temporarily
+            $('.answer-btn').prop('disabled', true);
+            isProcessing = true;
+            
+            setTimeout(() => {
+                showLoading();
+                
+                $.ajax({
+                    url: '/answer',
+                    type: 'POST',
+                    data: { answer: answer },
+                    dataType: 'json',
+                    success: function(response) {
+                        hideLoading();
+                        updateScore(response.score);
+                        currentQuestionCount++;
+                        getNextQuestion();
+                    },
+                    error: function() {
+                        hideLoading();
+                        showError('Error submitting answer. Please try again.');
+                        $('.answer-btn').prop('disabled', false);
+                        $('.answer-btn').removeClass('selected');
+                    },
+                    complete: function() {
+                        isProcessing = false;
+                    }
+                });
+            }, 300);
+        }
+
+        function getNextQuestion() {
+            showLoading();
+            
+            $.ajax({
+                url: '/question',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Question response:', response);
+                    hideLoading();
+                    
+                    if (response.question) {
+                        displayQuestion(response.question, response.score);
+                        updateProgress();
+                    } else {
+                        console.log('No question found, showing results');
+                        displayResults(response);
+                    }
+                },
+                error: function() {
+                    hideLoading();
+                    showError('Error loading question. Please try again.');
+                }
+            });
+        }
+
+        function displayQuestion(question, score) {
+            console.log('displayQuestion called with:', question, score);
+            $('#question-number').text(`Question ${question.number}`);
+            $('#question-text').text(question.question);
+            updateScore(score);
+            
+            // Reset button states
+            $('.answer-btn').removeClass('selected').prop('disabled', false);
+            
+            // Show question card
+            $('#question-card').removeClass('hidden').show();
+            console.log('Question card should now be visible');
+        }
+
+        function displayResults(response) {
+            $('#question-card').addClass('hidden');
+            $('#progress-container').hide();
+            
+            let resultsHtml = `
+                <div class="results-header">
+                    <h2>Assessment Complete!</h2>
+                    <p>Your LPERL Assessment Results</p>
+                </div>
+                <div class="score-cards">
+                    <div class="score-card">
+                        <h3>Final Score</h3>
+                        <div class="score">${parseFloat(response.score).toFixed(1)}</div>
+                    </div>
+                    <div class="score-card">
+                        <h3>Level</h3>
+                        <div class="score">${response.final_level || 'N/A'}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <p>${response.message || 'Assessment completed successfully.'}</p>
+                </div>
+                <button onclick="restartAssessment()" class="restart-btn" style="margin-top: 20px;">
+                    Take Assessment Again
+                </button>
+            `;
+            
+            $('#results-content').html(resultsHtml);
+            $('#results-card').removeClass('hidden');
+        }
+
+        function updateScore(score) {
+            $('#current-score').text(`Score: ${parseFloat(score).toFixed(1)}`);
+        }
+
+        function updateProgress() {
+            const progress = Math.min((currentQuestionCount / 20) * 100, 95);
+            $('#progress-fill').css('width', progress + '%');
+            $('#progress-text').text(`Question ${currentQuestionCount + 1}`);
+        }
+
+        function showLoading() {
+            $('#loading').show();
+            $('#question-card').addClass('hidden');
+        }
+
+        function hideLoading() {
+            $('#loading').hide();
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        function restartAssessment() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
