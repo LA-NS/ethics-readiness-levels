@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-Ethics Readiness Levels Tool - Version 0.1
+Ethics Readiness Levels Tool - Version 0.2-dev
 A four-level, iterative method to track how ethical reflection is implemented 
 in the design of AI systems.
+
+** DEVELOPMENT VERSION - NOT FOR PRODUCTION USE **
 
 Based on the research paper: "Ethics Readiness of Artificial Intelligence: 
 A Practical Evaluation Method" (under review)
@@ -399,8 +401,9 @@ if __name__ == '__main__':
     # Initialize database
     initialize_db()
     
-    print("Ethics Readiness Levels Tool - Version 0.1")
-    print("==============================================")
+    print("Ethics Readiness Levels Tool - Version 0.2-dev")
+    print("================================================")
+    print("🚧 DEVELOPMENT VERSION - NOT FOR PRODUCTION USE 🚧")
     print("A four-level, iterative method to track ethical reflection in AI systems")
     print("Starting local Flask server...")
     print("Open your web browser and go to: http://localhost:8080")
