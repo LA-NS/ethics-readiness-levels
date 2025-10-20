@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ethics Readiness Levels Tool</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     
     <style>
         /* General styles */
@@ -15,8 +16,66 @@
             background-color: ivory;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
+        }
+
+        /* Main layout container */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        /* Left main content area */
+        .content-area {
+            flex: 1;
+            max-width: 800px;
+            min-width: 600px;
+        }
+
+        /* Right sidebar for chart */
+        .chart-sidebar {
+            width: 300px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            display: none; /* Hidden until assessment starts */
+        }
+
+        .chart-widget {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-widget h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1000px) {
+            .main-layout {
+                flex-direction: column;
+            }
+            
+            .chart-sidebar {
+                width: 100%;
+                position: static;
+                order: -1; /* Move chart above content on mobile */
+            }
+            
+            .chart-widget {
+                margin-bottom: 20px;
+            }
         }
 
         /* Header styles */
@@ -39,14 +98,7 @@
             color: #666;
         }
 
-        /* Container styles */
-        .container {
-            width: 80%;
-            max-width: 800px;
-            padding: 20px;
-        }
-
-        /* Main content styles */
+        /* Main content styles - now contained within content-area */
         main {
             width: 100%;
             text-align: center;
@@ -410,30 +462,46 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Ethics Readiness Levels Tool</h1>
-            <p class="subtitle">A four-level, iterative method to track how ethical reflection is implemented in the design of AI systems</p>
-            <p style="margin: 5px 0; font-size: 0.8rem; color: #888;">Version 0.1</p>
+    <header>
+        <h1>Ethics Readiness Levels Tool</h1>
+        <p class="subtitle">A four-level, iterative method to track how ethical reflection is implemented in the design of AI systems</p>
+        <p style="margin: 5px 0; font-size: 0.8rem; color: #888;">Version 0.2-dev</p>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; color: #555; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Based on the research paper:</p>
+            <p style="margin: 0 0 10px 0; font-style: italic;">"Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method" (under review)</p>
             
-            <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; color: #555;">
-                <p style="margin: 0 0 10px 0; font-weight: bold;">Based on the research paper:</p>
-                <p style="margin: 0 0 10px 0; font-style: italic;">"Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method" (under review)</p>
-                
-                <p style="margin: 10px 0 5px 0; font-weight: bold;">Authors:</p>
-                <p style="margin: 0 0 10px 0;">Laurynas Adomaitis (RISE), Vincent Israel-Jost (CEA-Saclay/Larsim), Alexei Grinbaum (CEA-Saclay/Larsim)</p>
-                
-                <p style="margin: 10px 0 5px 0; font-weight: bold;">Implementation & Hosting:</p>
-                <p style="margin: 0 0 10px 0;">This tool implementation is developed and hosted by RISE (Research Institutes of Sweden)</p>
-                
-                <p style="margin: 10px 0 5px 0; font-weight: bold;">Funding:</p>
-                <p style="margin: 0;">This research has been funded by the AIOLIA project (European Commission Grant Agreement 101187937) and was part of the MultiRATE EU Horizon project (Grant Agreement 101073929).</p>
-            </div>
+            <p style="margin: 10px 0 5px 0; font-weight: bold;">Authors:</p>
+            <p style="margin: 0 0 10px 0;">Laurynas Adomaitis (RISE), Vincent Israel-Jost (CEA-Saclay/Larsim), Alexei Grinbaum (CEA-Saclay/Larsim)</p>
+            
+            <p style="margin: 10px 0 5px 0; font-weight: bold;">Implementation & Hosting:</p>
+            <p style="margin: 0 0 10px 0;">This tool implementation is developed and hosted by RISE (Research Institutes of Sweden)</p>
+            
+            <p style="margin: 10px 0 5px 0; font-weight: bold;">Funding:</p>
+            <p style="margin: 0;">This research has been funded by the AIOLIA project (European Commission Grant Agreement 101187937) and was part of the MultiRATE EU Horizon project (Grant Agreement 101073929).</p>
         </div>
+    </header>
+
+    <div class="main-layout">
+        <div class="content-area">
 
         <!-- Setup Section -->
         <div id="setup" class="setup-form">
             <form id="determiningForm">
+                <fieldset class="determining-questions">
+                    <legend>Assessment Information</legend>
+                    
+                    <div class="question-group">
+                        <label for="user_name">Your Name:</label>
+                        <input type="text" id="user_name" name="name" required placeholder="Enter your name" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                    </div>
+
+                    <div class="question-group">
+                        <label for="product_name">Product/Service Name:</label>
+                        <input type="text" id="product_name" name="product_name" required placeholder="Enter the name of your product or service" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                    </div>
+                </fieldset>
+
                 <fieldset class="determining-questions">
                     <legend>Initial Questions</legend>
                     
@@ -495,6 +563,9 @@
             </div>
         </div>
 
+        <!-- Real-time Chart Section -->
+
+
         <!-- Loading Section -->
         <div id="loading" class="loading">
             <div class="loading-spinner"></div>
@@ -523,7 +594,23 @@
                 <!-- Results will be populated by JavaScript -->
             </div>
         </div>
-    </div>
+        
+        </div> <!-- End content-area -->
+
+        <!-- Right Sidebar for Chart -->
+        <div class="chart-sidebar" id="chart-sidebar">
+            <div class="chart-widget">
+                <h4 id="chart-title">Ethics Readiness Progress</h4>
+                <div id="plotly-chart" style="width:100%;height:250px;"></div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button id="download-chart" class="answer-btn" style="font-size: 0.8rem; padding: 5px 10px; display: none;">
+                        📊 Download Chart
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div> <!-- End main-layout -->
 
     <footer>
         <p>Ethics Readiness Levels Tool v0.1 - Implemented and hosted by RISE (Research Institutes of Sweden)</p>
@@ -688,7 +775,71 @@
 
         function updateScore(score) {
             $('#current-score').text(`Score: ${parseFloat(score).toFixed(1)}`);
+            updateRealtimeChart();
         }
+
+        function updateRealtimeChart() {
+            // Show chart sidebar once assessment starts
+            $('#chart-sidebar').show();
+            
+            // Update chart title with product name
+            const productName = $('#product_name').val() || 'Product';
+            $('#chart-title').text(`${productName} - Ethics Progress`);
+            
+            // Fetch updated chart data
+            $.ajax({
+                url: '/chart_data',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.chart) {
+                        const chartData = JSON.parse(response.chart);
+                        
+                        // Update chart title to include product name
+                        chartData.layout.title = `${productName} - Ethics Readiness`;
+                        chartData.layout.height = 250;
+                        chartData.layout.margin = {l: 40, r: 20, t: 40, b: 40};
+                        
+                        Plotly.newPlot('plotly-chart', chartData.data, chartData.layout, {
+                            displayModeBar: false,
+                            responsive: true
+                        });
+                        
+                        // Show download button when chart is ready
+                        $('#download-chart').show();
+                    }
+                },
+                error: function() {
+                    console.log('Chart update failed - continuing without real-time chart');
+                }
+            });
+        }
+
+        function downloadChart() {
+            const productName = $('#product_name').val() || 'Product';
+            const userName = $('#user_name').val() || 'User';
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            const filename = `${productName}_Ethics_Assessment_${timestamp}.png`;
+            
+            Plotly.toImage('plotly-chart', {
+                format: 'png',
+                width: 800,
+                height: 600,
+                scale: 2
+            }).then(function(dataUri) {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUri;
+                link.click();
+            }).catch(function() {
+                alert('Download failed. Please try again.');
+            });
+        }
+
+        // Add click handler for download button
+        $(document).ready(function() {
+            $('#download-chart').click(downloadChart);
+        });
 
         function updateProgress() {
             const progress = Math.min((currentQuestionCount / 20) * 100, 95);

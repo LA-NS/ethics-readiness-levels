@@ -22,18 +22,18 @@ Updated: 20/10/2025 - Version 0.1 Release
 import os
 import time
 import sqlite3
+import json
 from flask import Flask, jsonify, request, session, render_template
 
-# Try to import matplotlib, make it optional
+# Try to import visualization libraries
 try:
-    import matplotlib
-    import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
-    HAS_MATPLOTLIB = True
+    import plotly.graph_objects as go
+    import plotly.utils
+    HAS_PLOTLY = True
 except ImportError:
-    HAS_MATPLOTLIB = False
-    print("⚠️  Warning: matplotlib not available. Graphs will be disabled.")
-    print("   To enable graphs, install matplotlib: pip install matplotlib")
+    HAS_PLOTLY = False
+    print("⚠️  Warning: Plotly not available. Real-time graphs will be disabled.")
+    print("   To enable real-time graphs, install plotly: pip install plotly")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'lperl-local-secret-key-change-in-production')
@@ -61,6 +61,7 @@ def initialize_db():
 def determine_blocks(answers):
     """Determine which question blocks to include based on initial answers."""
     session['user_name'] = request.form.get('name', '')
+    session['product_name'] = request.form.get('product_name', '')
     blocks = ['zero_case']  # 'zero_case' is included for all users
 
     # Check each condition separately - following original logic
@@ -166,35 +167,51 @@ def end_session_and_present_results():
 
     # Generate a timestamp to create a unique filename
     user_name = session.get('user_name', 'user')
+    product_name = session.get('product_name', 'Product')
     timestamp = f"{user_name}_{int(time.time())}"
     
-    graph_url = None
-    if HAS_MATPLOTLIB:
-        # Generate a graph of the score progression
-        graph_filename = f'score_progression_{timestamp}.png'
+    # Generate Plotly visualization for final results
+    graph_json = None
+    if HAS_PLOTLY:
         scores = session.get('score_progression', [4])
         questions = list(range(1, len(scores) + 1))
-
-        plt.figure(figsize=(10, 6))
-        plt.plot(questions, scores, marker='o', linewidth=2, markersize=6)
-        plt.xlabel('Question Number')
-        plt.ylabel('LPERL Score')
-        plt.title(f'LPERL Score Progression for {user_name}')
-        plt.grid(True, alpha=0.3)
-        plt.ylim(0, 4.5)
         
-        # Add horizontal lines for LPERL levels
-        plt.axhline(y=1, color='red', linestyle='--', alpha=0.5, label='LPERL 1')
-        plt.axhline(y=2, color='orange', linestyle='--', alpha=0.5, label='LPERL 2')
-        plt.axhline(y=3, color='yellow', linestyle='--', alpha=0.5, label='LPERL 3')
-        plt.axhline(y=4, color='green', linestyle='--', alpha=0.5, label='LPERL 4')
-        plt.legend()
+        # Create Plotly figure
+        fig = go.Figure()
         
-        plt.tight_layout()
-        plt.savefig(os.path.join('static', graph_filename), dpi=150, bbox_inches='tight')
-        plt.close()
+        # Add score progression line
+        fig.add_trace(go.Scatter(
+            x=questions,
+            y=scores,
+            mode='lines+markers',
+            name='LPERL Score',
+            line=dict(color='#2E86AB', width=3),
+            marker=dict(size=8)
+        ))
         
-        graph_url = f'/static/{graph_filename}'
+        # Add LPERL level reference lines
+        fig.add_hline(y=1, line_dash="dash", line_color="red", opacity=0.5, 
+                     annotation_text="LPERL 1", annotation_position="right")
+        fig.add_hline(y=2, line_dash="dash", line_color="orange", opacity=0.5,
+                     annotation_text="LPERL 2", annotation_position="right")
+        fig.add_hline(y=3, line_dash="dash", line_color="gold", opacity=0.5,
+                     annotation_text="LPERL 3", annotation_position="right")
+        fig.add_hline(y=4, line_dash="dash", line_color="green", opacity=0.5,
+                     annotation_text="LPERL 4", annotation_position="right")
+        
+        # Update layout with product name
+        fig.update_layout(
+            title=f'{product_name} - Final Ethics Readiness Assessment Results',
+            xaxis_title='Question Number',
+            yaxis_title='LPERL Score',
+            yaxis=dict(range=[0, 4.5]),
+            showlegend=False,
+            height=400,
+            margin=dict(l=50, r=50, t=50, b=50)
+        )
+        
+        # Convert to JSON for embedding
+        graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     # Store final results in database
     conn = get_db()
@@ -213,9 +230,9 @@ def end_session_and_present_results():
     result = {
         'score': round(score, 2),
         'message': message,
-        'graph': graph_url,
+        'graph_json': graph_json,
         'final_level': f"LPERL {int(score) if score <= 4 else 4}",
-        'has_graph': HAS_MATPLOTLIB
+        'has_graph': HAS_PLOTLY
     }
     
     session.clear()
@@ -362,6 +379,60 @@ def post_answer():
     return jsonify({
         'message': 'Answer received',
         'score': session.get('score', 4)
+    })
+
+
+@app.route('/chart_data', methods=['GET'])
+def chart_data():
+    """Return current score progression as JSON for real-time charting."""
+    if not HAS_PLOTLY:
+        return jsonify({'error': 'Plotly not available'})
+    
+    scores = session.get('score_progression', [4])
+    questions = list(range(1, len(scores) + 1))
+    current_score = session.get('score', 4)
+    product_name = session.get('product_name', 'Product')
+    
+    # Create Plotly figure
+    fig = go.Figure()
+    
+    # Add score progression line
+    fig.add_trace(go.Scatter(
+        x=questions,
+        y=scores,
+        mode='lines+markers',
+        name='LPERL Score',
+        line=dict(color='#2E86AB', width=3),
+        marker=dict(size=6, color='#2E86AB')
+    ))
+    
+    # Add LPERL level reference lines
+    fig.add_hline(y=1, line_dash="dash", line_color="red", opacity=0.5)
+    fig.add_hline(y=2, line_dash="dash", line_color="orange", opacity=0.5)
+    fig.add_hline(y=3, line_dash="dash", line_color="gold", opacity=0.5)
+    fig.add_hline(y=4, line_dash="dash", line_color="green", opacity=0.5)
+    
+    # Update layout with product name
+    fig.update_layout(
+        title=f'{product_name} - Ethics Readiness',
+        xaxis_title='Question',
+        yaxis_title='LPERL Score',
+        yaxis=dict(range=[0, 4.5]),
+        showlegend=False,
+        height=250,
+        font=dict(size=10),
+        margin=dict(l=50, r=50, t=50, b=50),
+        plot_bgcolor='rgba(248,248,248,1)',
+        paper_bgcolor='rgba(255,255,255,1)'
+    )
+    
+    # Convert to JSON
+    chart_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return jsonify({
+        'chart': chart_json,
+        'current_score': current_score,
+        'total_questions': len(scores) - 1  # Subtract 1 for initial score
     })
 
 
