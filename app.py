@@ -60,7 +60,7 @@ def initialize_db():
 
 def determine_blocks(answers):
     """Determine which question blocks to include based on initial answers."""
-    session['user_name'] = request.form.get('name', '')
+    session['user_name'] = 'User'  # Default user name since field was removed
     session['product_name'] = request.form.get('product_name', '')
     blocks = ['zero_case']  # 'zero_case' is included for all users
 
@@ -166,22 +166,27 @@ def end_session_and_present_results():
     message = get_message_by_score(score)
 
     # Generate a timestamp to create a unique filename
-    user_name = session.get('user_name', 'user')
     product_name = session.get('product_name', 'Product')
-    timestamp = f"{user_name}_{int(time.time())}"
+    timestamp = f"assessment_{int(time.time())}"
     
     # Generate Plotly visualization for final results
     graph_json = None
     if HAS_PLOTLY:
         scores = session.get('score_progression', [4])
-        questions = list(range(1, len(scores) + 1))
+        indicators = session.get('indicator_progression', [])
+        
+        # Create x-axis labels: use indicator numbers if available, otherwise question numbers
+        if indicators:
+            x_labels = indicators
+        else:
+            x_labels = list(range(1, len(scores) + 1))
         
         # Create Plotly figure
         fig = go.Figure()
         
         # Add score progression line
         fig.add_trace(go.Scatter(
-            x=questions,
+            x=x_labels,
             y=scores,
             mode='lines+markers',
             name='LPERL Score',
@@ -202,7 +207,7 @@ def end_session_and_present_results():
         # Update layout with product name
         fig.update_layout(
             title=f'{product_name} - Final Ethics Readiness Assessment Results',
-            xaxis_title='Question Number',
+            xaxis_title='Indicator',
             yaxis_title='LPERL Score',
             yaxis=dict(range=[0, 4.5]),
             showlegend=False,
@@ -252,6 +257,7 @@ def start_new_session():
         session['score'] = 4  # Starting score is 4
         session['answers'] = {}
         session['score_progression'] = [4]
+        session['indicator_progression'] = []  # Track indicator numbers for chart x-axis
     except Exception as e:
         print(f"Error starting session: {e}")
     finally:
@@ -364,6 +370,9 @@ def post_answer():
     # Store answer
     session.setdefault('answers', {})[current_question_number] = answer
     session['score_progression'].append(session['score'])
+    
+    # Track indicator numbers for chart x-axis
+    session.setdefault('indicator_progression', []).append(str(current_question_number))
 
     print(f"Question {current_question_number}: {answer} -> score change: {score_change} -> new score: {session['score']}")
 
@@ -389,16 +398,22 @@ def chart_data():
         return jsonify({'error': 'Plotly not available'})
     
     scores = session.get('score_progression', [4])
-    questions = list(range(1, len(scores) + 1))
+    indicators = session.get('indicator_progression', [])
     current_score = session.get('score', 4)
     product_name = session.get('product_name', 'Product')
+    
+    # Create x-axis labels: use indicator numbers if available, otherwise question numbers
+    if indicators:
+        x_labels = indicators
+    else:
+        x_labels = list(range(1, len(scores) + 1))
     
     # Create Plotly figure
     fig = go.Figure()
     
     # Add score progression line
     fig.add_trace(go.Scatter(
-        x=questions,
+        x=x_labels,
         y=scores,
         mode='lines+markers',
         name='LPERL Score',
@@ -415,7 +430,7 @@ def chart_data():
     # Update layout with product name
     fig.update_layout(
         title=f'{product_name} - Ethics Readiness',
-        xaxis_title='Question',
+        xaxis_title='Indicator',
         yaxis_title='LPERL Score',
         yaxis=dict(range=[0, 4.5]),
         showlegend=False,

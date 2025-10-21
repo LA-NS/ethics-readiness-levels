@@ -215,6 +215,30 @@
             color: white;
         }
 
+        /* Download button styles */
+        .download-btn {
+            background: #fff;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            padding: 8px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            color: #333;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            border-color: #45a049;
+            background-color: #f1f8f4;
+        }
+
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+
         /* Setup form styles */
         .setup-form {
             background: #fff;
@@ -492,11 +516,6 @@
                     <legend>Assessment Information</legend>
                     
                     <div class="question-group">
-                        <label for="user_name">Your Name:</label>
-                        <input type="text" id="user_name" name="name" required placeholder="Enter your name" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
-                    </div>
-
-                    <div class="question-group">
                         <label for="product_name">Product/Service Name:</label>
                         <input type="text" id="product_name" name="product_name" required placeholder="Enter the name of your product or service" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
                     </div>
@@ -603,7 +622,7 @@
                 <h4 id="chart-title">Ethics Readiness Progress</h4>
                 <div id="plotly-chart" style="width:100%;height:250px;"></div>
                 <div style="text-align: center; margin-top: 10px;">
-                    <button id="download-chart" class="answer-btn" style="font-size: 0.8rem; padding: 5px 10px; display: none;">
+                    <button id="download-chart" class="download-btn" style="display: none;">
                         📊 Download Chart
                     </button>
                 </div>
@@ -803,10 +822,13 @@
                         Plotly.newPlot('plotly-chart', chartData.data, chartData.layout, {
                             displayModeBar: false,
                             responsive: true
+                        }).then(function() {
+                            // Show download button only after chart is fully rendered
+                            console.log('Chart rendered successfully');
+                            $('#download-chart').show();
+                        }).catch(function(error) {
+                            console.error('Chart rendering failed:', error);
                         });
-                        
-                        // Show download button when chart is ready
-                        $('#download-chart').show();
                     }
                 },
                 error: function() {
@@ -816,29 +838,62 @@
         }
 
         function downloadChart() {
+            console.log('Download button clicked');
+            
             const productName = $('#product_name').val() || 'Product';
-            const userName = $('#user_name').val() || 'User';
             const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
             const filename = `${productName}_Ethics_Assessment_${timestamp}.png`;
             
+            console.log('Attempting to download chart as:', filename);
+            
+            // Check if chart exists
+            const chartElement = document.getElementById('plotly-chart');
+            if (!chartElement || !chartElement._fullLayout) {
+                alert('Chart not ready yet. Please wait for the chart to load.');
+                return;
+            }
+            
+            // Try Plotly.toImage first
             Plotly.toImage('plotly-chart', {
                 format: 'png',
                 width: 800,
                 height: 600,
                 scale: 2
             }).then(function(dataUri) {
+                console.log('Chart image generated successfully');
+                
+                // Create download link
                 const link = document.createElement('a');
                 link.download = filename;
                 link.href = dataUri;
+                link.style.display = 'none';
+                
+                // Append to body, click, and remove
+                document.body.appendChild(link);
                 link.click();
-            }).catch(function() {
-                alert('Download failed. Please try again.');
+                
+                // Clean up after a short delay
+                setTimeout(function() {
+                    document.body.removeChild(link);
+                }, 100);
+                
+                console.log('Download initiated');
+            }).catch(function(error) {
+                console.error('Plotly download failed:', error);
+                
+                // Fallback: try using html2canvas if available
+                alert('Standard download failed. Please right-click on the chart and "Save image as..." or try refreshing the page.');
             });
         }
 
-        // Add click handler for download button
+        // Add click handler for download button using event delegation
         $(document).ready(function() {
-            $('#download-chart').click(downloadChart);
+            // Use event delegation to handle clicks on dynamically created button
+            $(document).on('click', '#download-chart', function(e) {
+                e.preventDefault();
+                console.log('Download button clicked - event handler working!');
+                downloadChart();
+            });
         });
 
         function updateProgress() {
