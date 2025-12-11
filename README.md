@@ -2,7 +2,7 @@
 
 This repository contains the research paper and data for **Ethics Readiness Levels (ERLs)**, a four-level, iterative method to track how ethical reflection is implemented in the design of AI systems.
 
-**Paper:** "Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method" (under review)
+**Paper:** "Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method", preprint available [![arXiv](https://img.shields.io/badge/arXiv-2512.09729-b31b1b.svg)](https://arxiv.org/abs/2512.09729)
 
 **Authors:** Laurynas Adomaitis (RISE), Vincent Israel-Jost (CEA-Saclay/Larsim), Alexei Grinbaum (CEA-Saclay/Larsim)
 
