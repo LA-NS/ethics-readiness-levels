@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIOLIA Pairings Editor</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: ivory;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 18px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .back-btn {
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            background: #fff;
+        }
+        .back-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+        .aiolia-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .aiolia-title-logo {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            border-radius: 3px;
+        }
+        .pairings-toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .pairings-search {
+            flex: 1;
+            min-width: 260px;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .pairings-btn {
+            border: 1px solid #333;
+            background: #fff;
+            color: #333;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .pairings-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+        .pairings-summary {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .pairings-table-wrapper {
+            max-height: 75vh;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .pairings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .pairings-table th,
+        .pairings-table td {
+            border-bottom: 1px solid #eee;
+            padding: 8px;
+            vertical-align: top;
+        }
+        .pairings-table th {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 1;
+            text-align: left;
+        }
+        .aiolia-id-input {
+            width: 70px;
+            padding: 6px 8px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+        }
+        .pairing-row-edited {
+            background: #fff8e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <h2 class="aiolia-title" style="margin: 0;">
+                <img src="/aiolia-logo" alt="AIOLIA logo" class="aiolia-title-logo">
+                <span>AIOLIA Pairings Editor</span>
+            </h2>
+            <a class="back-btn" href="/">Back to Assessment</a>
+        </div>
+        <p style="margin: 4px 0 14px 0; color: #666;">
+            Edit AIOLIA IDs per indicator. Leave blank for no technical measure.
+        </p>
+
+        <div class="pairings-toolbar">
+            <input
+                type="text"
+                id="pairings-search"
+                class="pairings-search"
+                placeholder="Search indicator, block, question, or AIOLIA text..."
+            >
+            <button class="pairings-btn" id="reload-pairings-btn" type="button">Reload Pairings</button>
+            <button class="pairings-btn" id="save-pairings-btn" type="button">Save Adjustments</button>
+        </div>
+        <div class="pairings-summary" id="pairings-summary">Loading pairings...</div>
+        <div class="pairings-table-wrapper">
+            <table class="pairings-table">
+                <thead>
+                    <tr>
+                        <th>Indicator</th>
+                        <th>Block</th>
+                        <th>Question</th>
+                        <th>AIOLIA ID</th>
+                        <th>Technical measure</th>
+                    </tr>
+                </thead>
+                <tbody id="pairings-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let aioliaPairingsData = [];
+        let aioliaMeasuresById = {};
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function loadAioliaPairings() {
+            $('#pairings-summary').text('Loading pairings...');
+            $.ajax({
+                url: '/aiolia_pairings',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    aioliaPairingsData = response.pairings || [];
+                    aioliaMeasuresById = {};
+                    (response.measures || []).forEach(m => {
+                        aioliaMeasuresById[m.id] = m.text;
+                    });
+                    const summary = `${response.total_indicators} indicators, ${response.total_measures} measures, ${response.overrides_count} manual override(s).`;
+                    $('#pairings-summary').text(summary);
+                    renderAioliaPairings($('#pairings-search').val().trim().toLowerCase());
+                },
+                error: function() {
+                    $('#pairings-summary').text('Failed to load pairings.');
+                }
+            });
+        }
+
+        function renderAioliaPairings(searchTerm = '') {
+            let html = '';
+            const filtered = aioliaPairingsData.filter(item => {
+                if (!searchTerm) return true;
+                const haystack = [
+                    item.indicator,
+                    item.block,
+                    item.question,
+                    item.aiolia_text || '',
+                    item.default_aiolia_text || ''
+                ].join(' ').toLowerCase();
+                return haystack.includes(searchTerm);
+            });
+
+            filtered.forEach(item => {
+                const currentId = item.aiolia_id || '';
+                const defaultId = item.default_aiolia_id || '';
+                const rowClass = item.is_overridden ? 'pairing-row-edited' : '';
+                html += `
+                    <tr class="${rowClass}" data-indicator="${escapeHtml(item.indicator)}" data-default-id="${defaultId}">
+                        <td><strong>${escapeHtml(item.indicator)}</strong></td>
+                        <td>${escapeHtml(item.block)}</td>
+                        <td>${escapeHtml(item.question)}</td>
+                        <td>
+                            <input
+                                type="number"
+                                min="1"
+                                max="90"
+                                class="aiolia-id-input"
+                                data-indicator="${escapeHtml(item.indicator)}"
+                                data-default-id="${defaultId}"
+                                value="${currentId}"
+                            >
+                        </td>
+                        <td class="pairing-measure-cell">${escapeHtml(item.aiolia_text || 'Not paired')}</td>
+                    </tr>
+                `;
+            });
+
+            $('#pairings-tbody').html(html || '<tr><td colspan="5">No matches found.</td></tr>');
+
+            $('.aiolia-id-input').on('input', function() {
+                const rawValue = $(this).val().trim();
+                const parsed = parseInt(rawValue, 10);
+                const measureText = (Number.isInteger(parsed) && aioliaMeasuresById[parsed])
+                    ? aioliaMeasuresById[parsed]
+                    : 'Not paired';
+                $(this).closest('tr').find('.pairing-measure-cell').text(measureText);
+
+                const defaultId = $(this).attr('data-default-id');
+                const isEdited = rawValue !== String(defaultId || '');
+                $(this).closest('tr').toggleClass('pairing-row-edited', isEdited);
+            });
+        }
+
+        function saveAioliaPairings() {
+            const overrides = {};
+
+            $('.aiolia-id-input').each(function() {
+                const indicator = $(this).attr('data-indicator');
+                const defaultIdRaw = $(this).attr('data-default-id');
+                const defaultId = defaultIdRaw ? parseInt(defaultIdRaw, 10) : null;
+                const rawValue = $(this).val().trim();
+
+                if (rawValue === '') {
+                    // Blank means explicit unpair for indicators that have a seeded default.
+                    if (defaultId !== null) {
+                        overrides[indicator] = 0;
+                    }
+                    return;
+                }
+
+                const parsed = parseInt(rawValue, 10);
+                if (!Number.isInteger(parsed) || parsed < 1 || parsed > 90) {
+                    return;
+                }
+
+                if (defaultId === null || parsed !== defaultId) {
+                    overrides[indicator] = parsed;
+                }
+            });
+
+            $.ajax({
+                url: '/aiolia_pairings_overrides',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ overrides: overrides }),
+                success: function(response) {
+                    alert(response.message || 'Pairings saved.');
+                    loadAioliaPairings();
+                },
+                error: function(xhr) {
+                    const message = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Failed to save pairings.';
+                    alert(message);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#reload-pairings-btn').on('click', function() {
+                loadAioliaPairings();
+            });
+            $('#save-pairings-btn').on('click', function() {
+                saveAioliaPairings();
+            });
+            $('#pairings-search').on('input', function() {
+                renderAioliaPairings($(this).val().trim().toLowerCase());
+            });
+            loadAioliaPairings();
+        });
+    </script>
+</body>
+</html>

@@ -19,12 +19,7 @@ LPERL (Legal, Privacy, Ethical Readiness Level) Assessment Tool is a completely 
 
 ## Quick Start
 
-**🚀 Easiest way (Recommended):**
-```bash
-python3 setup_and_run.py
-```
-
-**🛠️ Using the shell script:**
+**🛠️ Using the shell script (recommended):**
 ```bash
 ./start.sh
 ```
@@ -41,24 +36,17 @@ pip install -r requirements.txt
 # Run the application
 python app.py
 ```
-
-**🎮 Interactive launcher:**
-```bash
-# After dependencies are installed
-source venv/bin/activate
-python run.py
-```
-
-Then open your browser and go to: **http://localhost:5000**
+Then open your browser and go to: **http://127.0.0.1:8080**
 
 ## Project Structure
 
 ```
 erl_tool/
 ├── app.py                 # Main Flask application
-├── run.py                 # Launcher script
+├── start.sh               # Shell launcher
 ├── templates/
-│   └── index.html         # Web interface
+│   ├── index.html         # Main assessment interface
+│   └── aiolia_pairings.html  # AIOLIA pairings editor
 ├── static/               # Generated score graphs
 ├── schema.sql           # Database schema with actual LPERL questions
 ├── questions.sql        # Original MySQL dump (reference)
@@ -141,7 +129,7 @@ Modify the `get_message_by_score()` function in `app.py` to adjust:
 
 ## Changes from Original
 
-This version fixes all issues from the original `tool.py`:
+This version fixes the issues from the earlier archived implementation:
 
 1. **✅ Separated Content**: Clean Python code, HTML templates properly organized
 2. **✅ Real Questions**: Uses actual 129 LPERL framework questions instead of samples

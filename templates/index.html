@@ -19,27 +19,52 @@
             min-height: 100vh;
         }
 
-        /* Main layout container */
+        /* Main layout container with left bot help, center content, right chart */
         .main-layout {
             display: flex;
             flex: 1;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
             gap: 20px;
             padding: 0 20px;
         }
 
-        /* Left main content area */
+        /* Left sidebar for bot help */
+        .bot-help-sidebar {
+            width: 280px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            display: none; /* Hidden until assessment starts */
+        }
+
+        .bot-help-widget {
+            background: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+            border: 2px solid #e8dcc8;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(139, 119, 87, 0.15);
+        }
+
+        .bot-help-widget h4 {
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+            color: #8b7757;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Center content area */
         .content-area {
             flex: 1;
             max-width: 800px;
-            min-width: 600px;
+            min-width: 0; /* Allow flexbox to shrink properly */
         }
 
         /* Right sidebar for chart */
         .chart-sidebar {
-            width: 300px;
+            width: 280px;
             position: sticky;
             top: 20px;
             height: fit-content;
@@ -62,17 +87,30 @@
         }
 
         /* Responsive design */
-        @media (max-width: 1000px) {
+        @media (max-width: 1200px) {
             .main-layout {
                 flex-direction: column;
             }
             
+            .bot-help-sidebar,
             .chart-sidebar {
                 width: 100%;
                 position: static;
-                order: -1; /* Move chart above content on mobile */
             }
             
+            .bot-help-sidebar {
+                order: -2; /* Bot help at top */
+            }
+            
+            .chart-sidebar {
+                order: -1; /* Chart second */
+            }
+            
+            .content-area {
+                order: 0; /* Content last */
+            }
+            
+            .bot-help-widget,
             .chart-widget {
                 margin-bottom: 20px;
             }
@@ -127,9 +165,7 @@
         }
 
         .score-display {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #333;
+            display: none;
         }
 
         .progress-bar {
@@ -161,6 +197,105 @@
             text-align: left;
         }
 
+        /* Lifeline display in bot help sidebar */
+        .lifeline-display {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8dcc8;
+        }
+
+        .lifeline-count {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8b7757;
+            display: block;
+            text-shadow: 0 1px 2px rgba(139, 119, 87, 0.1);
+        }
+
+        .lifeline-label {
+            font-size: 0.85rem;
+            color: #a08968;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Bot help button in sidebar */
+        .bot-help-btn-sidebar {
+            background: linear-gradient(135deg, #8b7757 0%, #6b5d47 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(139, 119, 87, 0.3);
+            width: 100%;
+            text-align: center;
+        }
+
+        .bot-help-btn-sidebar:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 119, 87, 0.4);
+            background: linear-gradient(135deg, #9b8767 0%, #7b6d57 100%);
+        }
+
+        .bot-help-btn-sidebar:disabled {
+            background: #d4c9b8;
+            color: #998a75;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Bot hint container in sidebar */
+        .bot-hint-container-sidebar {
+            background: white;
+            border: 2px solid #e8dcc8;
+            border-radius: 8px;
+            padding: 15px;
+            animation: slideDown 0.3s ease;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(139, 119, 87, 0.1);
+        }
+
+        .bot-hint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: #8b7757;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .bot-hint-text {
+            color: #333;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .close-hint-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #666;
+            transition: color 0.2s;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-hint-btn:hover {
+            color: #333;
+        }
+
         .question-header {
             margin-bottom: 15px;
         }
@@ -173,7 +308,12 @@
             font-weight: bold;
             font-size: 0.9rem;
             display: inline-block;
-            margin-bottom: 10px;
+        }
+
+        .lifeline-info {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
         }
 
         .question-text {
@@ -181,6 +321,105 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 15px;
+        }
+
+        .aiolia-measure-box {
+            margin-bottom: 16px;
+            padding: 12px;
+            border: 1px solid #ffccd0;
+            border-left: 4px solid #ed1c24;
+            border-radius: 6px;
+            background: #fff5f6;
+        }
+
+        .aiolia-measure-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #c1121f;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .aiolia-measure-text {
+            font-size: 0.92rem;
+            line-height: 1.4;
+            color: #2f3b45;
+        }
+
+        .aiolia-logo-small {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            border-radius: 3px;
+        }
+
+        /* Bot Help button styles */
+        .bot-help-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            width: 100%;
+            text-align: center;
+        }
+
+        .bot-help-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .bot-help-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .bot-hint-container {
+            background: #ffffff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 12px;
+            animation: slideDown 0.3s ease;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-hint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .bot-hint-text {
+            color: #333;
+            line-height: 1.5;
+            font-size: 0.85rem;
         }
 
         /* Answer button styles */
@@ -353,6 +592,24 @@
             background: #555;
         }
 
+        .pairings-link-btn {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            padding: 12px 20px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #fff;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pairings-link-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
         /* Loading styles */
         .loading {
             display: none;
@@ -444,6 +701,383 @@
             color: white;
         }
 
+        /* Expert recommendations section */
+        .expert-notes-section {
+            margin-top: 18px;
+            text-align: left;
+            padding: 14px;
+            background: #fff9e8;
+            border: 1px solid #f3d9a5;
+            border-radius: 6px;
+        }
+
+        .expert-notes-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #7a4f00;
+        }
+
+        .expert-notes-textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            background: #fff;
+        }
+
+        .expert-notes-textarea:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .report-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .report-btn {
+            background: #333;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .report-btn:hover {
+            background: #555;
+            border-color: #555;
+        }
+
+        /* Concerns section styles */
+        .concerns-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #dee2e6;
+        }
+
+        .concerns-title {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .concern-card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid #dc3545;
+            border-radius: 5px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .concern-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .concern-number {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .concern-indicator {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .parent-info {
+            background: #fff8e1;
+            border-left: 3px solid #ff9800;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 3px;
+        }
+
+        .parent-question {
+            font-style: italic;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .parent-answer {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .parent-answer strong {
+            color: #333;
+        }
+
+        .loss-value {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .concern-metrics {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .metric {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .metric-value.loss {
+            color: #dc3545;
+        }
+
+        .metric-value.percent {
+            color: #856404;
+        }
+
+        .concern-recovery {
+            margin-bottom: 12px;
+        }
+
+        .recovery-bar {
+            width: 100%;
+            height: 8px;
+            background: #f8d7da;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .recovery-progress {
+            height: 100%;
+            background: #28a745;
+            transition: width 0.3s ease;
+        }
+
+        .recovery-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .concern-question {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 3px;
+            font-size: 0.95rem;
+        }
+
+        .concern-details summary {
+            cursor: pointer;
+            color: #007bff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            user-select: none;
+            padding: 8px 0;
+        }
+
+        .concern-details summary:hover {
+            color: #0056b3;
+        }
+
+        .sub-indicators {
+            margin-top: 8px;
+            border-left: 2px solid #dee2e6;
+            padding-left: 12px;
+        }
+
+        .sub-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            gap: 12px;
+        }
+
+        .sub-indicator.negative {
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+        }
+
+        .sub-indicator.positive {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+
+        .sub-indicator.neutral {
+            background: #f0f0f0;
+            border-left: 3px solid #6c757d;
+        }
+
+        .sub-info {
+            flex: 1;
+        }
+
+        .sub-header {
+            font-family: 'Courier New', Courier, monospace;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .sub-question {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-style: italic;
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .sub-score {
+            font-weight: bold;
+            white-space: nowrap;
+            font-family: 'Courier New', Courier, monospace;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .no-recovery {
+            padding: 12px;
+            background: #f8d7da;
+            border-radius: 3px;
+            color: #721c24;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .no-concerns {
+            margin-top: 30px;
+            padding: 24px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .no-concerns h3 {
+            color: #155724;
+            margin-bottom: 12px;
+        }
+
+        .no-concerns p {
+            color: #155724;
+            margin: 0;
+        }
+
+        /* Advanced analytics section */
+        .advanced-analytics-section {
+            margin-top: 28px;
+            padding-top: 18px;
+            border-top: 2px solid #e9ecef;
+            text-align: left;
+        }
+
+        .advanced-analytics-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2f3b45;
+            margin-bottom: 6px;
+        }
+
+        .advanced-analytics-subtitle {
+            margin: 0 0 14px 0;
+            font-size: 0.9rem;
+            color: #667788;
+        }
+
+        .advanced-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .advanced-kpi {
+            border: 1px solid #d9e2ec;
+            border-radius: 6px;
+            padding: 10px 12px;
+            background: #ffffff;
+        }
+
+        .advanced-kpi-label {
+            font-size: 0.78rem;
+            color: #6b7b8c;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .advanced-kpi-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2f3b45;
+        }
+
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+        }
+
+        .advanced-card {
+            border: 1px solid #d9e2ec;
+            border-radius: 6px;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .advanced-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #364a5e;
+        }
+
+        .advanced-hotspots {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.85rem;
+            color: #4d5d6c;
+        }
+
+        .advanced-hotspots li {
+            margin-bottom: 6px;
+        }
+
         /* Footer styles */
         footer {
             width: 100%;
@@ -471,6 +1105,16 @@
                 padding: 15px;
             }
             
+            .question-layout {
+                flex-direction: column;
+            }
+            
+            .bot-help-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e0e3ff;
+            }
+            
             .answer-buttons {
                 grid-template-columns: 1fr;
             }
@@ -480,6 +1124,10 @@
             }
             
             .score-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .advanced-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -507,6 +1155,30 @@
     </header>
 
     <div class="main-layout">
+        <!-- Left Sidebar: Bot Help -->
+        <div class="bot-help-sidebar" id="bot-help-sidebar">
+            <div class="bot-help-widget">
+                <h4>🤖 AI Assistant</h4>
+                <div class="lifeline-display">
+                    <span class="lifeline-count" id="lifelines-count-sidebar">💡 10</span>
+                    <span class="lifeline-label">Hints Left</span>
+                </div>
+                <button id="bot-help-btn" class="bot-help-btn-sidebar" onclick="getBotHelp()">
+                    Get Help with This Question
+                </button>
+                <div id="bot-hint-container" class="bot-hint-container-sidebar" style="display: none; margin-top: 15px;">
+                    <div class="bot-hint-header">
+                        <span>💡 AI Hint</span>
+                        <button class="close-hint-btn" onclick="closeHint()">✕</button>
+                    </div>
+                    <div id="bot-hint-text" class="bot-hint-text">
+                        <!-- AI hint will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center: Main Content -->
         <div class="content-area">
 
         <!-- Setup Section -->
@@ -518,6 +1190,14 @@
                     <div class="question-group">
                         <label for="product_name">Product/Service Name:</label>
                         <input type="text" id="product_name" name="product_name" required placeholder="Enter the name of your product or service" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                    </div>
+                    
+                    <div class="question-group" style="margin-top: 20px;">
+                        <label for="application_description">Application Description (3-4 sentences, max 500 characters):</label>
+                        <textarea id="application_description" name="application_description" required maxlength="500" rows="4" placeholder="Briefly describe your application, its purpose, key features, and target users..." style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px; font-family: inherit; resize: vertical;"></textarea>
+                        <div style="text-align: right; font-size: 0.85rem; color: #666; margin-top: 4px;">
+                            <span id="char-count">0</span>/500 characters
+                        </div>
                     </div>
                 </fieldset>
 
@@ -568,6 +1248,7 @@
                 </fieldset>
 
                 <button type="submit" class="start-btn">Start Assessment</button>
+                <a href="/aiolia-pairings" class="pairings-link-btn">AIOLIA Pairings (Editor)</a>
             </form>
         </div>
 
@@ -575,7 +1256,6 @@
         <div id="progress-container" class="progress-container">
             <div class="progress-info">
                 <span class="progress-text" id="progress-text">Progress</span>
-                <span class="score-display" id="current-score">Score: 4.0</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill"></div>
@@ -597,6 +1277,13 @@
                 <span class="question-number" id="question-number">Question 1</span>
             </div>
             <div class="question-text" id="question-text">Loading...</div>
+            <div id="aiolia-measure-container" class="aiolia-measure-box hidden">
+                <div class="aiolia-measure-title">
+                    <img src="/aiolia-logo" alt="AIOLIA logo" class="aiolia-logo-small">
+                    <span>AIOLIA Technical measure</span>
+                </div>
+                <div class="aiolia-measure-text" id="aiolia-measure-text"></div>
+            </div>
             <div class="answer-buttons">
                 <button class="answer-btn" id="yes-btn" onclick="submitAnswer('yes')">
                     Yes
@@ -639,8 +1326,21 @@
         let currentQuestionCount = 0;
         let totalQuestions = 0;
         let isProcessing = false;
+        let lifelinesRemaining = 10;
+        let chartScores = [4];
+        let chartIndicators = [];
+        let assessmentTrace = [];
+        let currentScoreValue = 4;
+        let currentAssessmentResult = null;
+        let lastAdvancedAnalytics = null;
 
         $(document).ready(function() {
+            // Character counter for application description
+            $('#application_description').on('input', function() {
+                const length = $(this).val().length;
+                $('#char-count').text(length);
+            });
+            
             // LEA question change handler
             $("input[name='product_for_LEAs']").change(function() {
                 if ($('#productForLEAsNo').is(':checked')) {
@@ -667,6 +1367,10 @@
                         hideLoading();
                         $('#setup').hide();
                         $('#progress-container').show();
+                        chartScores = [4];
+                        chartIndicators = [];
+                        assessmentTrace = [];
+                        currentScoreValue = 4;
                         getNextQuestion();
                     },
                     error: function() {
@@ -678,6 +1382,7 @@
                     }
                 });
             });
+
         });
 
         function submitAnswer(answer) {
@@ -696,6 +1401,8 @@
             
             setTimeout(() => {
                 showLoading();
+                const questionSnapshot = window.currentQuestion ? { ...window.currentQuestion } : null;
+                const scoreBefore = currentScoreValue;
                 
                 $.ajax({
                     url: '/answer',
@@ -704,6 +1411,28 @@
                     dataType: 'json',
                     success: function(response) {
                         hideLoading();
+                        if (response.score_progression) {
+                            chartScores = response.score_progression;
+                        }
+                        if (response.indicator_progression) {
+                            chartIndicators = response.indicator_progression;
+                        }
+                        if (questionSnapshot) {
+                            const delta = answer === 'yes'
+                                ? parseFloat(questionSnapshot.yes_score || 0)
+                                : parseFloat(questionSnapshot.no_score || 0);
+                            const scoreAfter = parseFloat(response.score);
+                            assessmentTrace.push({
+                                indicator: questionSnapshot.number,
+                                block: questionSnapshot.block,
+                                question: questionSnapshot.question,
+                                answer: answer.toUpperCase(),
+                                delta: delta,
+                                before: scoreBefore,
+                                after: scoreAfter
+                            });
+                        }
+                        currentScoreValue = parseFloat(response.score);
                         updateScore(response.score);
                         currentQuestionCount++;
                         getNextQuestion();
@@ -733,6 +1462,12 @@
                     hideLoading();
                     
                     if (response.question) {
+                        // Update lifelines from response
+                        if (response.lifelines_remaining !== undefined) {
+                            lifelinesRemaining = response.lifelines_remaining;
+                            updateLifelinesDisplay();
+                        }
+                        
                         displayQuestion(response.question, response.score);
                         updateProgress();
                     } else {
@@ -751,19 +1486,216 @@
             console.log('displayQuestion called with:', question, score);
             $('#question-number').text(`Question ${question.number}`);
             $('#question-text').text(question.question);
-            updateScore(score);
+            $('#current-score').text(`Score: ${parseFloat(score).toFixed(1)}`);
+            currentScoreValue = parseFloat(score);
+
+            if (question.aiolia_measure && question.aiolia_measure.text) {
+                $('#aiolia-measure-text').text(`AIOLIA ${question.aiolia_measure.id}: ${question.aiolia_measure.text}`);
+                $('#aiolia-measure-container').removeClass('hidden').show();
+            } else {
+                $('#aiolia-measure-text').text('');
+                $('#aiolia-measure-container').addClass('hidden').hide();
+            }
+            
+            // Store current question for bot help
+            window.currentQuestion = question;
             
             // Reset button states
             $('.answer-btn').removeClass('selected').prop('disabled', false);
             
+            // Hide any previous hint
+            $('#bot-hint-container').hide();
+            
             // Show question card
             $('#question-card').removeClass('hidden').show();
+            $('#bot-help-sidebar').show();
             console.log('Question card should now be visible');
+        }
+
+        function getBotHelp() {
+            if (lifelinesRemaining <= 0) {
+                alert('No hints remaining!');
+                return;
+            }
+            
+            if (!window.currentQuestion) {
+                alert('No question loaded');
+                return;
+            }
+            
+            // Disable button and show loading
+            $('#bot-help-btn').prop('disabled', true).text('🤖 Getting help...');
+            
+            $.ajax({
+                url: '/get_llm_help',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    question: window.currentQuestion.question,
+                    question_number: window.currentQuestion.number
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        // Update lifelines
+                        lifelinesRemaining = response.lifelines_remaining;
+                        updateLifelinesDisplay();
+                        
+                        // Show hint
+                        $('#bot-hint-text').text(response.hint);
+                        $('#bot-hint-container').slideDown();
+                        
+                        // Re-enable button if lifelines remain
+                        if (lifelinesRemaining > 0) {
+                            $('#bot-help-btn').prop('disabled', false).text('🤖 Bot Help');
+                        } else {
+                            $('#bot-help-btn').prop('disabled', true).text('🤖 No Hints Left');
+                        }
+                    } else {
+                        alert('Error: ' + (response.error || 'Unknown error'));
+                        $('#bot-help-btn').prop('disabled', false).text('🤖 Bot Help');
+                    }
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Failed to get help';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                    alert(errorMsg);
+                    $('#bot-help-btn').prop('disabled', false).text('🤖 Bot Help');
+                }
+            });
+        }
+
+        function closeHint() {
+            $('#bot-hint-container').slideUp();
+        }
+
+        function updateLifelinesDisplay() {
+            const emoji = lifelinesRemaining > 0 ? '💡' : '❌';
+            const text = lifelinesRemaining === 1 ? 'Hint' : 'Hints';
+            $('#lifelines-count-sidebar').text(`${emoji} ${lifelinesRemaining}`);
+            
+            // Disable bot help button if no lifelines
+            if (lifelinesRemaining <= 0) {
+                $('#bot-help-btn').prop('disabled', true).text('No Hints Left');
+            }
         }
 
         function displayResults(response) {
             $('#question-card').addClass('hidden');
             $('#progress-container').hide();
+            renderRealtimeChart(chartScores, chartIndicators);
+            currentAssessmentResult = response;
+            
+            // Build top 3 concerns section
+            let concernsHtml = '';
+            if (response.top_concerns && response.top_concerns.length > 0) {
+                concernsHtml = `
+                    <div class="concerns-section">
+                        <h3 class="concerns-title">⚠️ Top Areas Needing Attention</h3>
+`;
+                
+                response.top_concerns.forEach((concern, index) => {
+                    const recoveryPercent = concern.recovery_percent.toFixed(0);
+                    const unrecoveredPercent = (100 - concern.recovery_percent).toFixed(0);
+                    
+                    // Separate parent from children
+                    const parentAnswer = concern.all_answers[0];
+                    const childAnswers = concern.all_answers.slice(1);
+                    
+                    concernsHtml += `
+                        <div class="concern-card">
+                            <div class="concern-header">
+                                <span class="concern-number">${index + 1}.</span>
+                                <span class="concern-indicator">Indicator ${concern.indicator}</span>
+                            </div>
+                            
+                            <div class="parent-info">
+                                <div class="parent-question">
+                                    "${concern.parent_question}"
+                                </div>
+                                <div class="parent-answer">
+                                    Your answer: <strong>${concern.parent_answer.toUpperCase()}</strong> → 
+                                    <span class="loss-value">-${concern.initial_loss.toFixed(3)} pts</span>
+                                </div>
+                            </div>
+                            
+                            <div class="concern-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Net Loss:</span>
+                                    <span class="metric-value loss">${concern.net_loss.toFixed(3)} pts</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Unrecovered:</span>
+                                    <span class="metric-value percent">${unrecoveredPercent}%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="concern-recovery">
+                                <div class="recovery-bar">
+                                    <div class="recovery-progress" style="width: ${recoveryPercent}%"></div>
+                                </div>
+                                <div class="recovery-text">
+                                    Recovery: +${concern.recovery_amount.toFixed(3)} pts from sub-indicators
+                                </div>
+                            </div>
+`;
+                    
+                    if (childAnswers.length > 0) {
+                        concernsHtml += `
+                            <details class="concern-details" open>
+                                <summary>Sub-Indicators (${childAnswers.length}) - Recovery Breakdown</summary>
+                                <div class="sub-indicators">
+`;
+                        
+                        childAnswers.forEach(sub => {
+                            const changeSign = sub.score_change > 0 ? '+' : '';
+                            const changeClass = sub.score_change > 0 ? 'positive' : (sub.score_change < 0 ? 'negative' : 'neutral');
+                            
+                            concernsHtml += `
+                                <div class="sub-indicator ${changeClass}">
+                                    <div class="sub-info">
+                                        <div class="sub-header">
+                                            <strong>${sub.indicator}</strong> → Answer: <strong>${sub.answer.toUpperCase()}</strong>
+                                        </div>
+                                        <div class="sub-question">"${sub.question}"</div>
+                                    </div>
+                                    <div class="sub-score">
+                                        ${changeSign}${sub.score_change.toFixed(3)} pts
+                                    </div>
+                                </div>
+`;
+                        });
+                        
+                        concernsHtml += `
+                                </div>
+                            </details>
+`;
+                    } else {
+                        concernsHtml += `
+                            <div class="no-recovery">
+                                No sub-indicators to recover points
+                            </div>
+`;
+                    }
+                    
+                    concernsHtml += `
+                        </div>
+`;
+                });
+                
+                concernsHtml += `
+                    </div>
+`;
+            } else {
+                // No concerns - excellent performance
+                concernsHtml = `
+                    <div class="no-concerns">
+                        <h3>✅ Excellent! No Areas of Concern</h3>
+                        <p>All points lost were fully recovered through sub-indicators. Your ethics framework shows strong implementation.</p>
+                    </div>
+`;
+            }
             
             let resultsHtml = `
                 <div class="results-header">
@@ -775,13 +1707,44 @@
                         <h3>Final Score</h3>
                         <div class="score">${parseFloat(response.score).toFixed(1)}</div>
                     </div>
-                    <div class="score-card">
-                        <h3>Level</h3>
-                        <div class="score">${response.final_level || 'N/A'}</div>
-                    </div>
                 </div>
                 <div style="margin-top: 20px;">
                     <p>${response.message || 'Assessment completed successfully.'}</p>
+                </div>
+                <div class="expert-notes-section">
+                    <label for="expert-recommendations" class="expert-notes-label">Expert Recommendations (Primary Report Section)</label>
+                    <textarea
+                        id="expert-recommendations"
+                        class="expert-notes-textarea"
+                        placeholder="Write your recommendations and follow-up actions here..."
+                    ></textarea>
+                    <div class="report-actions">
+                        <button id="download-full-report-btn" class="report-btn" onclick="downloadFullReportPdf()">
+                            Download Full Report (PDF)
+                        </button>
+                    </div>
+                </div>
+                ${concernsHtml}
+                <div class="advanced-analytics-section">
+                    <h3 class="advanced-analytics-title">Advanced Ethics Analytics</h3>
+                    <p class="advanced-analytics-subtitle">High-resolution post-assessment telemetry with contribution-level signal tracking.</p>
+                    <div class="advanced-kpis" id="advanced-kpis"></div>
+                    <div class="advanced-grid">
+                        <div class="advanced-card">
+                            <h4>Cumulative Score Dynamics</h4>
+                            <div id="advanced-score-chart" style="width:100%;height:320px;"></div>
+                        </div>
+                        <div class="advanced-card">
+                            <h4>Risk Hotspots</h4>
+                            <ol class="advanced-hotspots" id="advanced-hotspots"></ol>
+                            <h4 style="margin-top: 12px;">Block Attribution</h4>
+                            <div id="advanced-block-chart" style="width:100%;height:220px;"></div>
+                        </div>
+                    </div>
+                    <div class="advanced-card" style="margin-top: 12px;">
+                        <h4>Per-Indicator Contribution Waterfall</h4>
+                        <div id="advanced-delta-chart" style="width:100%;height:300px;"></div>
+                    </div>
                 </div>
                 <button onclick="restartAssessment()" class="restart-btn" style="margin-top: 20px;">
                     Take Assessment Again
@@ -790,51 +1753,369 @@
             
             $('#results-content').html(resultsHtml);
             $('#results-card').removeClass('hidden');
+            renderAdvancedAnalytics();
         }
 
         function updateScore(score) {
             $('#current-score').text(`Score: ${parseFloat(score).toFixed(1)}`);
-            updateRealtimeChart();
         }
 
-        function updateRealtimeChart() {
-            // Show chart sidebar once assessment starts
+        function renderRealtimeChart(scores, indicators) {
+            // Show chart only at end-of-assessment
             $('#chart-sidebar').show();
             
             // Update chart title with product name
             const productName = $('#product_name').val() || 'Product';
             $('#chart-title').text(`${productName} - Ethics Progress`);
-            
-            // Fetch updated chart data
-            $.ajax({
-                url: '/chart_data',
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if (response.chart) {
-                        const chartData = JSON.parse(response.chart);
-                        
-                        // Update chart title to include product name
-                        chartData.layout.title = `${productName} - Ethics Readiness`;
-                        chartData.layout.height = 250;
-                        chartData.layout.margin = {l: 40, r: 20, t: 40, b: 40};
-                        
-                        Plotly.newPlot('plotly-chart', chartData.data, chartData.layout, {
-                            displayModeBar: false,
-                            responsive: true
-                        }).then(function() {
-                            // Show download button only after chart is fully rendered
-                            console.log('Chart rendered successfully');
-                            $('#download-chart').show();
-                        }).catch(function(error) {
-                            console.error('Chart rendering failed:', error);
-                        });
-                    }
-                },
-                error: function() {
-                    console.log('Chart update failed - continuing without real-time chart');
-                }
+            const xLabels = (indicators && indicators.length > 0)
+                ? indicators
+                : scores.map((_, idx) => idx + 1);
+
+            const data = [{
+                x: xLabels,
+                y: scores,
+                mode: 'lines+markers',
+                name: 'LPERL Score',
+                line: { color: '#2E86AB', width: 3 },
+                marker: { size: 6, color: '#2E86AB' }
+            }];
+
+            const layout = {
+                title: `${productName} - Ethics Readiness`,
+                xaxis: { title: 'Indicator' },
+                yaxis: { title: 'LPERL Score', range: [0, 4.5] },
+                showlegend: false,
+                height: 250,
+                font: { size: 10 },
+                margin: { l: 40, r: 20, t: 40, b: 40 },
+                plot_bgcolor: 'rgba(248,248,248,1)',
+                paper_bgcolor: 'rgba(255,255,255,1)',
+                shapes: [
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 1, y1: 1, line: { color: 'red', width: 1, dash: 'dash' } },
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 2, y1: 2, line: { color: 'orange', width: 1, dash: 'dash' } },
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 3, y1: 3, line: { color: 'gold', width: 1, dash: 'dash' } },
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 4, y1: 4, line: { color: 'green', width: 1, dash: 'dash' } }
+                ]
+            };
+
+            Plotly.newPlot('plotly-chart', data, layout, {
+                displayModeBar: false,
+                responsive: true
+            }).then(function() {
+                console.log('Chart rendered successfully');
+                $('#download-chart').show();
+            }).catch(function(error) {
+                console.error('Chart rendering failed:', error);
             });
+        }
+
+        function renderAdvancedAnalytics() {
+            if (!assessmentTrace || assessmentTrace.length === 0) {
+                $('#advanced-kpis').html('<div class="advanced-kpi"><div class="advanced-kpi-label">Status</div><div class="advanced-kpi-value">No trace available</div></div>');
+                return;
+            }
+
+            const totalSteps = assessmentTrace.length;
+            const negative = assessmentTrace.filter(t => t.delta < 0);
+            const positive = assessmentTrace.filter(t => t.delta > 0);
+            const neutral = assessmentTrace.filter(t => t.delta === 0);
+            const totalLoss = negative.reduce((s, t) => s + Math.abs(t.delta), 0);
+            const totalRecovery = positive.reduce((s, t) => s + t.delta, 0);
+            const volatility = assessmentTrace.filter(t => t.delta !== 0).length;
+            const worst = negative.length > 0 ? negative.reduce((a, b) => (a.delta < b.delta ? a : b)) : null;
+            lastAdvancedAnalytics = {
+                totalSteps,
+                negativeCount: negative.length,
+                positiveCount: positive.length,
+                neutralCount: neutral.length,
+                totalLoss: Number(totalLoss.toFixed(3)),
+                totalRecovery: Number(totalRecovery.toFixed(3)),
+                volatility,
+                worst: worst ? { indicator: worst.indicator, delta: Number(worst.delta.toFixed(3)), question: worst.question } : null,
+                hotspots: [...negative].sort((a, b) => a.delta - b.delta).slice(0, 5).map(item => ({
+                    indicator: item.indicator,
+                    block: item.block,
+                    delta: Number(item.delta.toFixed(3)),
+                    question: item.question
+                }))
+            };
+
+            $('#advanced-kpis').html(`
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Steps</div><div class="advanced-kpi-value">${totalSteps}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Negative Events</div><div class="advanced-kpi-value">${negative.length}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Positive Events</div><div class="advanced-kpi-value">${positive.length}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Neutral Events</div><div class="advanced-kpi-value">${neutral.length}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Total Loss</div><div class="advanced-kpi-value">-${totalLoss.toFixed(3)}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Total Recovery</div><div class="advanced-kpi-value">+${totalRecovery.toFixed(3)}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Volatility</div><div class="advanced-kpi-value">${volatility}</div></div>
+                <div class="advanced-kpi"><div class="advanced-kpi-label">Worst Drop</div><div class="advanced-kpi-value">${worst ? `${worst.indicator} (${worst.delta.toFixed(3)})` : 'None'}</div></div>
+            `);
+
+            // Hotspots list
+            const topLosses = [...negative]
+                .sort((a, b) => a.delta - b.delta)
+                .slice(0, 5);
+            if (topLosses.length === 0) {
+                $('#advanced-hotspots').html('<li>No negative events detected.</li>');
+            } else {
+                $('#advanced-hotspots').html(
+                    topLosses.map(item =>
+                        `<li><strong>${item.indicator}</strong> (${item.block}) ${item.delta.toFixed(3)} pts — ${item.question}</li>`
+                    ).join('')
+                );
+            }
+
+            const labels = assessmentTrace.map((t, i) => `${i + 1}:${t.indicator}`);
+            const cumulative = assessmentTrace.map(t => t.after);
+            const deltas = assessmentTrace.map(t => t.delta);
+            const markerColors = deltas.map(d => d > 0 ? '#28a745' : (d < 0 ? '#dc3545' : '#6c757d'));
+            const hover = assessmentTrace.map(t =>
+                `Indicator ${t.indicator}<br>Block: ${t.block}<br>Answer: ${t.answer}<br>Delta: ${t.delta.toFixed(3)}<br>Score: ${t.before.toFixed(3)} -> ${t.after.toFixed(3)}<br>${t.question}`
+            );
+
+            Plotly.newPlot('advanced-score-chart', [{
+                x: labels,
+                y: cumulative,
+                mode: 'lines+markers',
+                line: { color: '#2E86AB', width: 2.5 },
+                marker: { size: 7, color: markerColors },
+                customdata: hover,
+                hovertemplate: '%{customdata}<extra></extra>',
+                name: 'Cumulative Score'
+            }], {
+                margin: { l: 45, r: 20, t: 10, b: 65 },
+                yaxis: { title: 'Score', range: [0, 4.5] },
+                xaxis: { title: 'Step:Indicator', tickangle: -45 },
+                showlegend: false,
+                shapes: [
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 1, y1: 1, line: { color: 'red', width: 1, dash: 'dot' } },
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 2, y1: 2, line: { color: 'orange', width: 1, dash: 'dot' } },
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 3, y1: 3, line: { color: 'goldenrod', width: 1, dash: 'dot' } },
+                    { type: 'line', xref: 'paper', x0: 0, x1: 1, y0: 4, y1: 4, line: { color: 'green', width: 1, dash: 'dot' } }
+                ]
+            }, { displayModeBar: false, responsive: true });
+
+            Plotly.newPlot('advanced-delta-chart', [{
+                x: labels,
+                y: deltas,
+                type: 'bar',
+                marker: { color: markerColors },
+                customdata: hover,
+                hovertemplate: '%{customdata}<extra></extra>',
+                name: 'Delta'
+            }], {
+                margin: { l: 45, r: 20, t: 10, b: 65 },
+                yaxis: { title: 'Delta' },
+                xaxis: { title: 'Step:Indicator', tickangle: -45 },
+                showlegend: false
+            }, { displayModeBar: false, responsive: true });
+
+            // Block attribution chart (net deltas)
+            const blockNet = {};
+            assessmentTrace.forEach(t => {
+                blockNet[t.block] = (blockNet[t.block] || 0) + t.delta;
+            });
+            const blockNames = Object.keys(blockNet);
+            const blockVals = blockNames.map(b => Number(blockNet[b].toFixed(3)));
+            const blockColors = blockVals.map(v => v < 0 ? '#dc3545' : '#28a745');
+            Plotly.newPlot('advanced-block-chart', [{
+                x: blockVals,
+                y: blockNames,
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: blockColors },
+                hovertemplate: 'Block: %{y}<br>Net delta: %{x:.3f}<extra></extra>'
+            }], {
+                margin: { l: 90, r: 10, t: 10, b: 30 },
+                xaxis: { title: 'Net Delta' },
+                yaxis: { title: '' },
+                showlegend: false
+            }, { displayModeBar: false, responsive: true });
+        }
+
+        function toReportSafeHtml(text) {
+            return String(text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/\n/g, '<br>');
+        }
+
+        async function capturePlotlyImage(divId, width, height) {
+            const el = document.getElementById(divId);
+            if (!el || !el._fullLayout) return null;
+            try {
+                return await Plotly.toImage(divId, {
+                    format: 'png',
+                    width: width || 1200,
+                    height: height || 520,
+                    scale: 2
+                });
+            } catch (e) {
+                console.warn('Failed to capture chart image:', divId, e);
+                return null;
+            }
+        }
+
+        async function downloadFullReportPdf() {
+            const btn = document.getElementById('download-full-report-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Generating report...';
+            }
+
+            const recommendation = (document.getElementById('expert-recommendations')?.value || '').trim();
+            const companyName = ($('#product_name').val() || '').trim() || 'Company name';
+            const finalScore = currentAssessmentResult ? Number(currentAssessmentResult.score).toFixed(1) : 'N/A';
+            const generatedAt = new Date().toLocaleString();
+            const reportDate = new Date().toLocaleDateString();
+            const reportTitle = `Exit Report for Ethics Readiness Levels evaluation for ${companyName} at ${reportDate}`;
+            const classicChart = await capturePlotlyImage('plotly-chart', 1200, 520);
+            const concerns = (currentAssessmentResult && Array.isArray(currentAssessmentResult.top_concerns))
+                ? currentAssessmentResult.top_concerns
+                : [];
+            const topUnrecovered = concerns
+                .filter(c => Number(c.net_loss || 0) > 0 && Number(c.initial_loss || 0) > 0)
+                .sort((a, b) => Number(b.net_loss || 0) - Number(a.net_loss || 0))
+                .slice(0, 2);
+            const indicatorAnswersRows = (assessmentTrace || []).map((item, idx) => {
+                const sign = item.delta > 0 ? '+' : '';
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${toReportSafeHtml(item.indicator)}</td>
+                        <td>${toReportSafeHtml(item.answer)}</td>
+                        <td>${toReportSafeHtml(item.block || '-')}</td>
+                        <td>${sign}${Number(item.delta || 0).toFixed(3)}</td>
+                        <td>${Number(item.after || 0).toFixed(3)}</td>
+                        <td>${toReportSafeHtml(item.question || '')}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const reportHtml = `
+                <!doctype html>
+                <html>
+                <head>
+                    <meta charset="utf-8" />
+                    <title>${toReportSafeHtml(reportTitle)}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 26px; color: #222; }
+                        h1, h2, h3 { margin: 0 0 10px 0; }
+                        .meta { color: #555; margin-bottom: 16px; }
+                        .card { border: 1px solid #ddd; border-radius: 6px; padding: 12px; margin: 12px 0; }
+                        .primary { background: #fff9e8; border-color: #f3d9a5; }
+                        img { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 6px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                        th, td { border: 1px solid #ddd; padding: 6px; text-align: left; vertical-align: top; }
+                        th { background: #f6f6f6; }
+                        .page-break { page-break-before: always; margin-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${toReportSafeHtml(reportTitle)}</h1>
+                    <div class="meta">Generated: ${toReportSafeHtml(generatedAt)} | Final score: ${toReportSafeHtml(finalScore)}</div>
+
+                    <div class="card primary">
+                        <h2>Expert Recommendations</h2>
+                        <div>${recommendation ? toReportSafeHtml(recommendation) : '<em>No expert recommendations were entered.</em>'}</div>
+                    </div>
+
+                    <div class="card page-break">
+                        <h2>Score Chart</h2>
+                        ${classicChart ? `<img src="${classicChart}" alt="Classic progress chart">` : '<p>Chart image unavailable.</p>'}
+                    </div>
+
+                    <div class="card">
+                        <h2>Top Unrecovered Negative Indicators</h2>
+                        ${
+                            topUnrecovered.length > 0
+                                ? `<table>
+                                    <thead>
+                                        <tr>
+                                            <th>Indicator</th>
+                                            <th>Parent Negative Delta</th>
+                                            <th>Recovered</th>
+                                            <th>Unrecovered Fraction</th>
+                                            <th>Question</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${topUnrecovered.map(c => {
+                                            const initial = Number(c.initial_loss || 0);
+                                            const net = Number(c.net_loss || 0);
+                                            const recovered = Number(c.recovery_amount || 0);
+                                            const unrecoveredParentRaw = c.unrecovered_parent_loss !== undefined
+                                                ? Number(c.unrecovered_parent_loss || 0)
+                                                : Math.max(0, Math.min(net, initial));
+                                            const unrecoveredParent = Math.max(0, Math.min(unrecoveredParentRaw, initial));
+                                            const unrecoveredPercent = initial > 0 ? (unrecoveredParent / initial) * 100 : 0;
+                                            return `
+                                                <tr>
+                                                    <td>${toReportSafeHtml(c.indicator)}</td>
+                                                    <td>-${initial.toFixed(3)}</td>
+                                                    <td>+${recovered.toFixed(3)}</td>
+                                                    <td>${unrecoveredParent.toFixed(3)} / ${initial.toFixed(3)} (${unrecoveredPercent.toFixed(0)}%)</td>
+                                                    <td>${toReportSafeHtml(c.parent_question || '')}</td>
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>`
+                                : '<p>No unrecovered negative indicators found.</p>'
+                        }
+                    </div>
+
+                    <div class="card page-break">
+                        <h2>All Indicator Answers</h2>
+                        ${indicatorAnswersRows ? `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Indicator</th>
+                                        <th>Answer</th>
+                                        <th>Block</th>
+                                        <th>Delta</th>
+                                        <th>Score After</th>
+                                        <th>Question</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${indicatorAnswersRows}
+                                </tbody>
+                            </table>
+                        ` : '<p>No indicator answers available.</p>'}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const win = window.open('', '_blank');
+            if (!win) {
+                alert('Popup blocked. Please allow popups and try again.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Download Full Report (PDF)';
+                }
+                return;
+            }
+
+            win.document.open();
+            win.document.write(reportHtml);
+            win.document.close();
+            win.document.title = reportTitle;
+            win.focus();
+            setTimeout(() => {
+                win.print();
+            }, 400);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Download Full Report (PDF)';
+            }
         }
 
         function downloadChart() {
@@ -918,6 +2199,7 @@
         function restartAssessment() {
             location.reload();
         }
+
     </script>
 </body>
 </html>
