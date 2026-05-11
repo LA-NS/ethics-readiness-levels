@@ -1,19 +1,22 @@
-# LPERL Assessment Tool - Local Version
+# ERL Assessment Tool - Local Version
 
-LPERL (Legal, Privacy, Ethical Readiness Level) Assessment Tool is a completely local Flask web application that evaluates the ethical, legal, and privacy readiness of technology projects using the actual LPERL framework questions.
+ERL (Ethics Readiness Levels) / LPERL Assessment Tool is a completely local Flask web application that evaluates the ethical, legal, and privacy readiness of technology projects using validated framework questions.
 
 ## Features
 
-- **Comprehensive Assessment**: Uses the real LPERL framework with 129 validated questions across 4 blocks
+- **Comprehensive Assessment**: Uses validated framework questions across core and domain-specific blocks
 - **Multi-block Evaluation**: Dynamically includes relevant assessment blocks based on your project:
   - **Zero Case** (Basic Ethics) - included for all projects (35 questions)
   - **GDPR Block** - for projects using personal data (41 questions) 
-  - **AI Block** - for projects using artificial intelligence (30 questions)
+  - **AI Act Block** - for projects using artificial intelligence (30 questions)
   - **LED Block** - for Law Enforcement Agency products (23 questions)
+  - **Healthcare AI Block (AIOLIA route)** - optional healthcare-focused AI assessment
+  - **Public Administration AIA Block** - standalone algorithmic impact assessment route
 
 - **Intelligent Navigation**: Hierarchical question flow that adapts based on your answers
 - **Real-time Scoring**: Dynamic score calculation with detailed progression tracking
 - **Visual Results**: Generates professional score progression graphs with LPERL level indicators
+- **Expert Review Export**: Generates an editable `.docx` review sheet for Public Administration AIA indicators
 - **Completely Local**: No data leaves your computer - fully offline operation
 - **No Dependencies**: Uses only SQLite - no external database setup required
 
@@ -48,6 +51,7 @@ erl_tool/
 │   ├── index.html         # Main assessment interface
 │   └── aiolia_pairings.html  # AIOLIA pairings editor
 ├── static/               # Generated score graphs
+├── export_aia_review.py   # Export Public Administration AIA questions to DOCX
 ├── schema.sql           # Database schema with actual LPERL questions
 ├── questions.sql        # Original MySQL dump (reference)
 ├── requirements.txt     # Python dependencies
@@ -59,10 +63,12 @@ erl_tool/
 ## LPERL Assessment Process
 
 ### 1. Initial Classification
-Answer three determining questions to identify which assessment blocks apply to your project:
+Answer onboarding questions to identify which assessment blocks apply to your project:
 - **LEA Product**: Is your product created for Law Enforcement Agencies?
 - **Personal Data**: Does your product use personal data?
 - **AI Technology**: Does your product use artificial intelligence?
+- **Healthcare AI Route**: Should healthcare-specific AI indicators be used (AIOLIA)?
+- **Public Administration AIA Route**: Should the standalone public-sector AIA block be used?
 
 ### 2. Dynamic Question Flow
 The tool uses hierarchical question navigation:
@@ -86,8 +92,14 @@ The tool uses hierarchical question navigation:
 
 ## Technical Details
 
+### Healthcare and AIA Extensions
+- **Healthcare AI (AIOLIA)**: Adds a domain-specific route for clinical and care-related AI systems.
+- **Public Administration AIA**: Adds a dedicated block for algorithmic impact assessment in public-sector contexts.
+- **AIOLIA Pairings Editor**: `/aiolia-pairings` provides an interface for managing AIOLIA mappings.
+- **AIA Expert Review Export**: Run `python3 export_aia_review.py` to generate `AIA_Expert_Review.docx` for external review.
+
 ### Question Database
-The tool includes 129 actual LPERL framework questions:
+The tool includes validated framework questions across multiple blocks:
 - Sourced from validated academic research
 - Professionally weighted scoring system
 - Covers comprehensive ethical, legal, and privacy domains
