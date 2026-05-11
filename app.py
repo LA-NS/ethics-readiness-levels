@@ -40,7 +40,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'lperl-local-secret-key-change-in-production')
 DATABASE = 'lperl_local.sqlite'
 AIOLIA_OVERRIDES_FILE = 'aiolia_pairings_overrides.json'
-AIOLIA_LOGO_PATH = '/Users/laurynasadomaitis/.cursor/projects/Users-laurynasadomaitis-Downloads-erl-tool/assets/image-f0b7f3b3-5cdc-458a-9246-82244fc1d956.png'
+_assets = '/Users/laurynasadomaitis/.cursor/projects/Users-laurynasadomaitis-Downloads-erl-tool/assets'
+AIOLIA_LOGO_PATH = os.path.join(_assets, 'image-f0b7f3b3-5cdc-458a-9246-82244fc1d956.png')
+MULTIRATE_LOGO_PATH = os.path.join(_assets, 'image-2b5b7c9d-8a8f-4093-9eca-90350e88f158.png')
+SOPRANO_LOGO_PATH = os.path.join(_assets, 'image-f7dcf37b-8aca-4fba-a834-eb4e7e0353a7.png')
 
 # AIOLIA technical measures mapped dynamically to the active indicator set.
 AIOLIA_TECHNICAL_MEASURES = [
@@ -300,22 +303,76 @@ def initialize_db():
             conn.executescript(f.read())
         conn.close()
         print("Database initialized successfully!")
+    else:
+        # Ensure optional blocks exist (migrations for DBs created before they were added)
+        ensure_healthcare_block()
+        ensure_pub_admin_block()
+
+
+def _ensure_block(block_name, schema_marker):
+    """Generic migration: if block has no questions, seed it from schema.sql."""
+    conn = sqlite3.connect(DATABASE)
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM questions WHERE block = ?", (block_name,))
+        if cur.fetchone()[0] > 0:
+            return
+        cur.close()
+        schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'schema.sql')
+        with open(schema_path, 'r') as f:
+            content = f.read()
+        start = content.find(schema_marker)
+        if start == -1:
+            return
+        end = content.find("\n-- ", start + 1)
+        # Walk past comment-only lines to find the next real section boundary
+        for marker in ["-- Create indexes", "-- Public Administration", "-- Healthcare AI"]:
+            pos = content.find(marker, start + len(schema_marker))
+            if pos != -1:
+                end = min(end, pos) if end != -1 else pos
+        if end == -1:
+            end = len(content)
+        block_sql = content[start:end].strip()
+        if block_sql and "INSERT" in block_sql:
+            conn.executescript(block_sql)
+            print(f"Migrated: {block_name} block added to database.")
+    except Exception as e:
+        print(f"Migration _ensure_block({block_name}) failed:", e)
+    finally:
+        conn.close()
+
+
+def ensure_healthcare_block():
+    _ensure_block('healthcare_ai', '-- Healthcare AI block (AIOLIA)')
+
+
+def ensure_pub_admin_block():
+    _ensure_block('pub_admin_aia', '-- Public Administration AIA block')
 
 
 def determine_blocks(answers):
-    """Determine which question blocks to include based on initial answers."""
+    """Determine which question blocks to include based on onboarding answers."""
     session['user_name'] = 'User'  # Default user name since field was removed
     session['product_name'] = request.form.get('product_name', '')
-    blocks = ['zero_case']  # 'zero_case' is included for all users
+    healthcare_route = answers.get('healthcare_route', 'no').lower() == 'yes'
+    pub_admin_route = answers.get('pub_admin_route', 'no').lower() == 'yes'
 
-    # Check each condition separately - following original logic
-    if answers['product_for_LEAs'].lower() == 'yes':
+    if pub_admin_route:
+        # Public Administration AIA: standalone evaluation covering full 0–4 range
+        return ['pub_admin_aia']
+
+    if healthcare_route:
+        # AIOLIA Healthcare route: standalone evaluation covering full 0–4 range
+        return ['healthcare_ai']
+
+    # Standard route: zero_case + optional blocks from LEA / GDPR / AI answers
+    blocks = ['zero_case']
+    if answers.get('product_for_LEAs', 'no').lower() == 'yes':
         blocks.append('led_block')
-    if answers['uses_personal_data'].lower() == 'yes':
+    if answers.get('uses_personal_data', 'no').lower() == 'yes':
         blocks.append('gdpr_block')
-    if answers['uses_AI'].lower() == 'yes':
+    if answers.get('uses_AI', 'no').lower() == 'yes':
         blocks.append('ai_block')
-
     return blocks
 
 
@@ -337,11 +394,25 @@ def get_first_question_of_block(block_name):
 
 
 def question_exists(number):
-    """Check if a question with the given number exists."""
+    """Check if a question with the given number exists (any block)."""
     conn = get_db()
     cur = conn.cursor()
     try:
         cur.execute("SELECT COUNT(*) FROM questions WHERE number = ?", (str(number),))
+        count = cur.fetchone()[0]
+        return count > 0
+    finally:
+        cur.close()
+        conn.close()
+
+
+def question_exists_in_block(number, block):
+    """Check if a question with the given number exists in the given block."""
+    conn = get_db()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT COUNT(*) FROM questions WHERE block = ? AND number = ?",
+                    (block, str(number)))
         count = cur.fetchone()[0]
         return count > 0
     finally:
@@ -357,36 +428,36 @@ def increment_question_number(number):
     return '.'.join(parts)
 
 
-def get_next_question(number, answer):
+def get_next_question(number, answer, block=None):
     """
     Determine the next question based on current question and answer.
-    This follows the original logic for hierarchical question navigation.
+    When block is provided, only consider questions in that block so end-of-block
+    returns None and the session can advance to the next block.
     """
+    def exists(num):
+        if block:
+            return question_exists_in_block(num, block)
+        return question_exists(num)
+
     if answer.lower() == 'yes':
-        # Try to go deeper (add .1)
         deeper_question_number = number + '.1'
-        if question_exists(deeper_question_number):
+        if exists(deeper_question_number):
             return deeper_question_number
-        else:
-            # If no deeper question, increment at current level
-            next_number = increment_question_number(number)
-            while '.' in next_number and not question_exists(next_number):
-                # If incremented question doesn't exist, go up a level and try again
-                parts = next_number.split('.')
-                parts.pop()
-                next_number = '.'.join(parts)
-                next_number = increment_question_number(next_number)
-            return next_number if question_exists(next_number) else None
-    else:  # Answer is 'no'
-        # Skip deeper questions and go to next at current level
         next_number = increment_question_number(number)
-        while '.' in next_number and not question_exists(next_number):
-            # If incremented question doesn't exist, go up a level and try again
+        while '.' in next_number and not exists(next_number):
             parts = next_number.split('.')
             parts.pop()
             next_number = '.'.join(parts)
             next_number = increment_question_number(next_number)
-        return next_number if question_exists(next_number) else None
+        return next_number if exists(next_number) else None
+    else:
+        next_number = increment_question_number(number)
+        while '.' in next_number and not exists(next_number):
+            parts = next_number.split('.')
+            parts.pop()
+            next_number = '.'.join(parts)
+            next_number = increment_question_number(next_number)
+        return next_number if exists(next_number) else None
 
 
 def get_message_by_score(score):
@@ -519,22 +590,20 @@ def end_session_and_present_results():
     if HAS_PLOTLY:
         scores = session.get('score_progression', [4])
         indicators = session.get('indicator_progression', [])
+        n = len(scores)
+        # X-axis: step index (1, 2, 3, ...) so the chart is evenly spaced, not jumpy
+        x_steps = list(range(1, n + 1))
+        # Keep indicators for hover only
+        hover_indicators = indicators if indicators and len(indicators) == n else [str(i) for i in x_steps]
         
-        # Create x-axis labels: use indicator numbers if available, otherwise question numbers
-        if indicators:
-            x_labels = indicators
-        else:
-            x_labels = list(range(1, len(scores) + 1))
-        
-        # Create Plotly figure
         fig = go.Figure()
-        
-        # Add score progression line
         fig.add_trace(go.Scatter(
-            x=x_labels,
+            x=x_steps,
             y=scores,
             mode='lines+markers',
             name='LPERL Score',
+            customdata=hover_indicators,
+            hovertemplate='Step %{x}<br>Indicator %{customdata}<br>Score: %{y:.2f}<extra></extra>',
             line=dict(color='#2E86AB', width=3),
             marker=dict(size=8)
         ))
@@ -552,7 +621,7 @@ def end_session_and_present_results():
         # Update layout with product name
         fig.update_layout(
             title=f'{product_name} - Final Ethics Readiness Assessment Results',
-            xaxis_title='Indicator',
+            xaxis_title='Step',
             yaxis_title='LPERL Score',
             yaxis=dict(range=[0, 4.5]),
             showlegend=False,
@@ -652,13 +721,31 @@ def aiolia_logo():
     return send_file(AIOLIA_LOGO_PATH, mimetype='image/png')
 
 
+@app.route('/multirate-logo')
+def multirate_logo():
+    """Serve MultiRATE project logo for welcome page."""
+    if not os.path.exists(MULTIRATE_LOGO_PATH):
+        return jsonify({'error': 'MultiRATE logo not found'}), 404
+    return send_file(MULTIRATE_LOGO_PATH, mimetype='image/png')
+
+
+@app.route('/soprano-logo')
+def soprano_logo():
+    """Serve SOPRANO project logo for welcome page."""
+    if not os.path.exists(SOPRANO_LOGO_PATH):
+        return jsonify({'error': 'SOPRANO logo not found'}), 404
+    return send_file(SOPRANO_LOGO_PATH, mimetype='image/png')
+
+
 @app.route('/determine_blocks', methods=['POST'])
 def determine_blocks_endpoint():
     """Determine which question blocks to include based on user's initial answers."""
     answers = {
+        'pub_admin_route': request.form.get('pub_admin_route', 'no'),
+        'healthcare_route': request.form.get('healthcare_route', 'no'),
         'product_for_LEAs': request.form.get('product_for_LEAs', 'no'),
         'uses_personal_data': request.form.get('uses_personal_data', 'no'),
-        'uses_AI': request.form.get('uses_AI', 'no')
+        'uses_AI': request.form.get('uses_AI', 'no'),
     }
     
     # Store product name and application description
@@ -834,13 +921,22 @@ def post_answer():
 
     print(f"Question {current_question_number}: {answer} -> score change: {score_change} -> new score: {session['score']}")
 
-    # Calculate next question
-    next_question_number = get_next_question(current_question_number, answer)
+    # Calculate next question (scoped to current block so we advance to next block when done)
+    current_block = session['blocks'][session['current_block_index']]
+    next_question_number = get_next_question(current_question_number, answer, block=current_block)
     if not next_question_number:
-        # End of current block, move to next
-        session['current_block_index'] += 1
-        if session['current_block_index'] < len(session['blocks']):
-            next_question_number = get_first_question_of_block(session['blocks'][session['current_block_index']])
+        # End of current block, move to next (skip any empty blocks).
+        # If we're already at the last block, this will move index past the end
+        # and leave next_question_number as None so the session can terminate.
+        while True:
+            session['current_block_index'] += 1
+            if session['current_block_index'] >= len(session['blocks']):
+                next_question_number = None
+                break
+            next_block = session['blocks'][session['current_block_index']]
+            next_question_number = get_first_question_of_block(next_block)
+            if next_question_number:
+                break
 
     session['current_question'] = next_question_number
     return jsonify({
@@ -861,22 +957,18 @@ def chart_data():
     indicators = session.get('indicator_progression', [])
     current_score = session.get('score', 4)
     product_name = session.get('product_name', 'Product')
+    n = len(scores)
+    x_steps = list(range(1, n + 1))
+    hover_indicators = indicators if indicators and len(indicators) == n else [str(i) for i in x_steps]
     
-    # Create x-axis labels: use indicator numbers if available, otherwise question numbers
-    if indicators:
-        x_labels = indicators
-    else:
-        x_labels = list(range(1, len(scores) + 1))
-    
-    # Create Plotly figure
     fig = go.Figure()
-    
-    # Add score progression line
     fig.add_trace(go.Scatter(
-        x=x_labels,
+        x=x_steps,
         y=scores,
         mode='lines+markers',
         name='LPERL Score',
+        customdata=hover_indicators,
+        hovertemplate='Step %{x}<br>Indicator %{customdata}<br>Score: %{y:.2f}<extra></extra>',
         line=dict(color='#2E86AB', width=3),
         marker=dict(size=6, color='#2E86AB')
     ))
@@ -890,7 +982,7 @@ def chart_data():
     # Update layout with product name
     fig.update_layout(
         title=f'{product_name} - Ethics Readiness',
-        xaxis_title='Indicator',
+        xaxis_title='Step',
         yaxis_title='LPERL Score',
         yaxis=dict(range=[0, 4.5]),
         showlegend=False,
@@ -953,15 +1045,16 @@ def get_llm_help():
         'zero_case': 'General Ethics (applies to all products)',
         'gdpr_block': 'GDPR - General Data Protection Regulation',
         'led_block': 'LED - Law Enforcement Directive',
-        'ai_block': 'AI Act - Artificial Intelligence Regulation'
+        'ai_block': 'AI Act - Artificial Intelligence Regulation',
+        'healthcare_ai': 'Healthcare AI (AIOLIA)',
+        'pub_admin_aia': 'AI in Public Administration — Algorithmic Impact Assessment'
     }
     block_desc = block_descriptions.get(block_name, block_name)
     
-    # Build the prompt with context
+    # Build the prompt with context (without explicitly passing the indicator number)
     prompt = f"""Help the user interpret this question for their specific application.
 
 Question: "{question_text}"
-Indicator: {question_number}
 Regulatory Block: {block_desc}{parent_context}
 
 Application: "{app_description}"

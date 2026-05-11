@@ -62,6 +62,14 @@
             min-width: 0; /* Allow flexbox to shrink properly */
         }
 
+        /* When only setup form is visible (sidebars hidden), center the form on screen */
+        .main-layout.setup-centered {
+            justify-content: center;
+        }
+        .main-layout.setup-centered .content-area {
+            flex: 0 1 auto;
+        }
+
         /* Right sidebar for chart */
         .chart-sidebar {
             width: 280px;
@@ -136,6 +144,13 @@
             color: #666;
         }
 
+        @font-face {
+            font-family: 'Reactor7';
+            src: url('/static/Reactor7.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* Main content styles - now contained within content-area */
         main {
             width: 100%;
@@ -183,6 +198,74 @@
             transition: width 0.3s ease;
             width: 0%;
         }
+
+        /* Participant names top bar */
+        .participant-bar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: #111;
+            color: #f9f9f9;
+            padding: 6px 0;
+            font-family: 'Reactor7', system-ui, sans-serif;
+            letter-spacing: 0.08em;
+        }
+
+        .participant-bar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .participant-bar-label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .participant-bar-names {
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Minimal, transparent participant card */
+        #step-names {
+            background: rgba(255, 255, 255, 0.75);
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Picnic table visualization for participant names */
+        .names-table {
+            margin: 24px auto 16px;
+            max-width: 380px;
+            height: 200px;
+            background: url('/static/picnictable1.png') center center no-repeat;
+            background-size: contain;
+            position: relative;
+        }
+
+        .name-label {
+            position: absolute;
+            font-family: 'Reactor7', system-ui, sans-serif;
+            font-size: 1.8rem;
+            color: #1b1207;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .name-top-left { top: 8%; left: 10%; }
+        .name-top-right { top: 8%; right: 10%; text-align: right; }
+        .name-bottom-left { bottom: 8%; left: 10%; }
+        .name-bottom-right { bottom: 8%; right: 10%; text-align: right; }
 
         /* Question card styles */
         .card {
@@ -298,6 +381,10 @@
 
         .question-header {
             margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
         }
 
         .question-number {
@@ -355,6 +442,43 @@
             height: 22px;
             object-fit: contain;
             border-radius: 3px;
+        }
+
+        .block-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #f0f0f0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .block-badge-aiolia {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            border-radius: 2px;
+        }
+
+        .block-badge.healthcare-ai {
+            background: #fff5f6;
+            border: 1px solid #ffccd0;
+            color: #c1121f;
+        }
+
+        #panel-healthcare, #panel-pub-admin {
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        #panel-healthcare:hover {
+            border-color: #1a6b3c !important;
+            box-shadow: 0 2px 8px rgba(26,107,60,0.10);
+        }
+        #panel-pub-admin:hover {
+            border-color: #1a3a5c !important;
+            box-shadow: 0 2px 8px rgba(26,58,92,0.10);
         }
 
         /* Bot Help button styles */
@@ -608,6 +732,98 @@
         .pairings-link-btn:hover {
             background: #333;
             color: #fff;
+        }
+
+        /* Step-by-step onboarding */
+        .onboarding-wizard {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .onboarding-step {
+            display: none;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 28px;
+            text-align: left;
+        }
+        .onboarding-step.active {
+            display: block;
+        }
+        .onboarding-step h2 {
+            margin: 0 0 16px 0;
+            font-size: 1.25rem;
+            color: #333;
+        }
+        .onboarding-step .step-intro {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #444;
+        }
+        .onboarding-nav {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .onboarding-nav .btn-next, .onboarding-nav .btn-back {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .onboarding-nav .btn-next {
+            background: #333;
+            color: #fff;
+        }
+        .onboarding-nav .btn-next:hover { background: #555; }
+        .onboarding-nav .btn-back {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .onboarding-nav .btn-back:hover { background: #e0e0e0; }
+        .project-logos {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin: 24px 0;
+        }
+        .project-logos img {
+            max-height: 56px;
+            width: auto;
+            object-fit: contain;
+        }
+        .step-indicator {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .arxiv-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: #b31b1b;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .arxiv-link:hover {
+            background: #8b0000;
+            color: #fff;
+        }
+        .arxiv-badge {
+            font-family: monospace;
+            font-size: 0.85rem;
+            opacity: 0.95;
         }
 
         /* Loading styles */
@@ -1138,23 +1354,16 @@
         <h1>Ethics Readiness Levels Tool</h1>
         <p class="subtitle">A four-level, iterative method to track how ethical reflection is implemented in the design of AI systems</p>
         <p style="margin: 5px 0; font-size: 0.8rem; color: #888;">Version 0.2-dev</p>
-        
-        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; color: #555; max-width: 800px; margin-left: auto; margin-right: auto;">
-            <p style="margin: 0 0 10px 0; font-weight: bold;">Based on the research paper:</p>
-            <p style="margin: 0 0 10px 0; font-style: italic;">"Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method" (under review)</p>
-            
-            <p style="margin: 10px 0 5px 0; font-weight: bold;">Authors:</p>
-            <p style="margin: 0 0 10px 0;">Laurynas Adomaitis (RISE), Vincent Israel-Jost (CEA-Saclay/Larsim), Alexei Grinbaum (CEA-Saclay/Larsim)</p>
-            
-            <p style="margin: 10px 0 5px 0; font-weight: bold;">Implementation & Hosting:</p>
-            <p style="margin: 0 0 10px 0;">This tool implementation is developed and hosted by RISE (Research Institutes of Sweden)</p>
-            
-            <p style="margin: 10px 0 5px 0; font-weight: bold;">Funding:</p>
-            <p style="margin: 0;">This research has been funded by the AIOLIA project (European Commission Grant Agreement 101187937) and was part of the MultiRATE EU Horizon project (Grant Agreement 101073929).</p>
-        </div>
     </header>
 
-    <div class="main-layout">
+    <div class="participant-bar" id="participant-bar">
+        <div class="participant-bar-inner">
+            <span class="participant-bar-label">Participants:</span>
+            <span class="participant-bar-names" id="participant-names-display"></span>
+        </div>
+    </div>
+
+    <div class="main-layout setup-centered" id="main-layout">
         <!-- Left Sidebar: Bot Help -->
         <div class="bot-help-sidebar" id="bot-help-sidebar">
             <div class="bot-help-widget">
@@ -1181,29 +1390,114 @@
         <!-- Center: Main Content -->
         <div class="content-area">
 
-        <!-- Setup Section -->
-        <div id="setup" class="setup-form">
+        <!-- Step-by-step onboarding -->
+        <div id="setup" class="onboarding-wizard">
             <form id="determiningForm">
-                <fieldset class="determining-questions">
-                    <legend>Assessment Information</legend>
-                    
-                    <div class="question-group">
-                        <label for="product_name">Product/Service Name:</label>
-                        <input type="text" id="product_name" name="product_name" required placeholder="Enter the name of your product or service" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                <!-- Hidden routing field -->
+                <input type="hidden" name="pub_admin_route" id="pub_admin_route_field" value="no">
+
+                <!-- Step 1: Welcome + Tool Selection -->
+                <div id="step-welcome" class="onboarding-step active">
+                    <p class="step-intro">This is a dialogue-led tool. Please have your partner in place to begin the reflection journey.</p>
+                    <p class="step-intro"><strong>Based on the research paper:</strong><br><em>"Ethics Readiness of Artificial Intelligence: A Practical Evaluation Method"</em></p>
+                    <p class="step-intro"><strong>Authors:</strong> Laurynas Adomaitis (RISE), Vincent Israel-Jost (CEA-Saclay/Larsim), Alexei Grinbaum (CEA-Saclay/Larsim)</p>
+                    <p class="step-intro">
+                        <a href="https://arxiv.org/abs/2512.09729" target="_blank" rel="noopener noreferrer" class="arxiv-link">
+                            <span class="arxiv-badge">arXiv:2512.09729</span> View PDF on arXiv
+                        </a>
+                    </p>
+                    <p class="step-intro">
+                        AIOLIA Technical measures are developed following <em>D3.1 Operational ethics guidelines on use cases related to human behaviour and cognition</em>.
+                    </p>
+                    <p class="step-intro">
+                        <a href="https://aiolia.eu/wp-content/uploads/2026/02/AIOLIA-D3.1-certified.pdf" target="_blank" rel="noopener noreferrer" class="arxiv-link">
+                            <span class="arxiv-badge">AIOLIA D3.1</span> View Operational Ethics Guidelines (PDF)
+                        </a>
+                    </p>
+                    <p class="step-intro"><strong>Implementation &amp; hosting:</strong> RISE (Research Institutes of Sweden)</p>
+                    <div class="project-logos">
+                        <img src="/static/logos/aiolia.png" alt="AIOLIA" title="AIOLIA" onerror="this.style.display='none'">
+                        <img src="/static/logos/multirate.png" alt="MultiRATE" title="MultiRATE" onerror="this.style.display='none'">
+                        <img src="/static/logos/soprano.png" alt="SOPRANO" title="SOPRANO - Socially-Acceptable and Trustworthy Human-Robot Teaming for Agile Industries" onerror="this.style.display='none'">
                     </div>
-                    
-                    <div class="question-group" style="margin-top: 20px;">
-                        <label for="application_description">Application Description (3-4 sentences, max 500 characters):</label>
-                        <textarea id="application_description" name="application_description" required maxlength="500" rows="4" placeholder="Briefly describe your application, its purpose, key features, and target users..." style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px; font-family: inherit; resize: vertical;"></textarea>
-                        <div style="text-align: right; font-size: 0.85rem; color: #666; margin-top: 4px;">
-                            <span id="char-count">0</span>/500 characters
+                    <p class="step-intro" style="font-size: 0.9rem; color: #666;">Funding: AIOLIA (EU Grant 101187937), MultiRATE (EU Horizon 101073929), SOPRANO (EU Horizon 101120990)</p>
+
+                    <div style="margin-top: 28px; text-align: center;">
+                        <button type="button" id="btn-begin-erl" class="btn-next" style="min-width: 220px;">Begin ERL Assessment</button>
+                    </div>
+
+                    <div style="margin-top: 36px;">
+                        <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.09em; color: #999; font-weight: 600; margin-bottom: 14px;">Specialist Sub-tools</p>
+                        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                            <div id="panel-healthcare" style="flex: 1; min-width: 200px; padding: 18px 16px; background: #fff; border: 1.5px solid #ddd; border-radius: 8px; cursor: pointer; line-height: 1.5;">
+                                <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; color: #1a6b3c;">Healthcare AI Assessment</div>
+                                <div style="font-size: 0.82rem; color: #555;">AIOLIA-aligned clinical AI assessment covering safety, bias, and patient autonomy.</div>
+                            </div>
+                            <div id="panel-pub-admin" style="flex: 1; min-width: 200px; padding: 18px 16px; background: #fff; border: 1.5px solid #ddd; border-radius: 8px; cursor: pointer; line-height: 1.5;">
+                                <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; color: #1a3a5c;">AI in Public Administration</div>
+                                <div style="font-size: 0.82rem; color: #555; margin-bottom: 6px;">Algorithmic Impact Assessment for citizen-facing AI systems in government.</div>
+                            </div>
                         </div>
                     </div>
-                </fieldset>
+                </div>
 
-                <fieldset class="determining-questions">
-                    <legend>Initial Questions</legend>
-                    
+                <!-- Step 2: Participant names -->
+                <div id="step-names" class="onboarding-step">
+                    <p class="step-indicator">Step 2 of 7</p>
+                    <h2>Who is participating?</h2>
+                    <p class="step-intro">Please enter the first names of the people taking part in this reflection session. You can add more participants if needed.</p>
+                    <div class="names-table">
+                        <div class="name-label name-top-left" id="name-corner-1"></div>
+                        <div class="name-label name-top-right" id="name-corner-2"></div>
+                        <div class="name-label name-bottom-left" id="name-corner-3"></div>
+                        <div class="name-label name-bottom-right" id="name-corner-4"></div>
+                    </div>
+                    <div id="participants-container" class="participants-container">
+                        <div class="question-group">
+                            <label for="participant-1">Participant 1</label>
+                            <input type="text" id="participant-1" name="participants" class="form-input participant-name-input" autocomplete="off" placeholder="First name">
+                        </div>
+                        <div class="question-group">
+                            <label for="participant-2">Participant 2</label>
+                            <input type="text" id="participant-2" name="participants" class="form-input participant-name-input" autocomplete="off" placeholder="First name">
+                        </div>
+                    </div>
+                    <div class="onboarding-nav">
+                        <button type="button" class="btn-back" id="btn-back-from-names">Back</button>
+                        <button type="button" class="btn-next" id="btn-from-names">Next</button>
+                        <button type="button" class="btn-back" id="btn-add-participant" style="margin-left:auto;">+ Add participant</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Healthcare route -->
+                <div id="step-healthcare" class="onboarding-step">
+                    <p class="step-indicator">Step 3 of 7</p>
+                    <h2>Your profile</h2>
+                    <p class="step-intro">Every use case gets our most important and urgent questions. Additional questions are added based on their profile.</p>
+                    <div class="question-group">
+                        <p>Is your application an AI system for healthcare?</p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="healthcareRouteYes" name="healthcare_route" value="yes">
+                                <label for="healthcareRouteYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="healthcareRouteNo" name="healthcare_route" value="no" checked>
+                                <label for="healthcareRouteNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="onboarding-nav">
+                        <button type="button" class="btn-back" id="btn-back-from-healthcare">Back</button>
+                        <button type="button" class="btn-next" id="btn-from-healthcare">Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: LEA -->
+                <div id="step-lea" class="onboarding-step">
+                    <p class="step-indicator">Step 4 of 7</p>
+                    <h2>Your profile</h2>
+                    <p class="step-intro">Every use case gets our most important and urgent questions. Additional questions are added based on their profile.</p>
                     <div class="question-group">
                         <p>Is your product/service intended for Law Enforcement Agencies?</p>
                         <div class="radio-group">
@@ -1217,8 +1511,18 @@
                             </div>
                         </div>
                     </div>
+                    <div class="onboarding-nav">
+                        <button type="button" class="btn-back" id="btn-back-from-lea">Back</button>
+                        <button type="button" class="btn-next" id="btn-from-lea">Next</button>
+                    </div>
+                </div>
 
-                    <div class="question-group" id="personalDataQuestion" style="display: none;">
+                <!-- Step 4: GDPR (only if LEA = No) -->
+                <div id="step-gdpr" class="onboarding-step">
+                    <p class="step-indicator">Step 5 of 7</p>
+                    <h2>Your profile</h2>
+                    <p class="step-intro">Every use case gets our most important and urgent questions. Additional questions are added based on their profile.</p>
+                    <div class="question-group">
                         <p>Does your product/service use personal data?</p>
                         <div class="radio-group">
                             <div class="radio-option">
@@ -1231,7 +1535,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="onboarding-nav">
+                        <button type="button" class="btn-back" id="btn-back-from-gdpr">Back</button>
+                        <button type="button" class="btn-next" id="btn-from-gdpr">Next</button>
+                    </div>
+                </div>
 
+                <!-- Step 5: AI -->
+                <div id="step-ai" class="onboarding-step">
+                    <p class="step-indicator">Step 6 of 7</p>
+                    <h2>Your profile</h2>
+                    <p class="step-intro">Every use case gets our most important and urgent questions. Additional questions are added based on their profile.</p>
                     <div class="question-group">
                         <p>Does your product/service use AI?</p>
                         <div class="radio-group">
@@ -1245,10 +1559,31 @@
                             </div>
                         </div>
                     </div>
-                </fieldset>
+                    <div class="onboarding-nav">
+                        <button type="button" class="btn-back" id="btn-back-from-ai">Back</button>
+                        <button type="button" class="btn-next" id="btn-from-ai">Next</button>
+                    </div>
+                </div>
 
-                <button type="submit" class="start-btn">Start Assessment</button>
-                <a href="/aiolia-pairings" class="pairings-link-btn">AIOLIA Pairings (Editor)</a>
+                <!-- Step 6: Profile (product name + description) -->
+                <div id="step-profile" class="onboarding-step">
+                    <p class="step-indicator" id="profile-step-indicator">Step 7 of 7</p>
+                    <h2>Assessment information</h2>
+                    <div class="question-group">
+                        <label for="product_name" id="product_name_label">Product/Service Name:</label>
+                        <input type="text" id="product_name" name="product_name" required placeholder="Enter the name of your product or service" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                    </div>
+                    <div class="question-group" style="margin-top: 20px;">
+                        <label for="application_description" id="application_description_label">Application Description (3–4 sentences, max 500 characters):</label>
+                        <textarea id="application_description" name="application_description" required maxlength="500" rows="4" placeholder="Briefly describe your application, its purpose, key features, and target users..." style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px; font-family: inherit; resize: vertical;"></textarea>
+                        <div style="text-align: right; font-size: 0.85rem; color: #666; margin-top: 4px;"><span id="char-count">0</span>/500 characters</div>
+                    </div>
+                    <div class="onboarding-nav">
+                        <button type="button" class="btn-back" id="btn-back-from-profile">Back</button>
+                        <button type="submit" class="btn-next start-btn" id="btn-start-assessment">Start Assessment</button>
+                    </div>
+                    <a href="/aiolia-pairings" class="pairings-link-btn" style="margin-top: 12px; display: inline-block;">AIOLIA Pairings (Editor)</a>
+                </div>
             </form>
         </div>
 
@@ -1275,6 +1610,10 @@
         <div id="question-card" class="card question-card hidden">
             <div class="question-header">
                 <span class="question-number" id="question-number">Question 1</span>
+                <div id="block-badge" class="block-badge hidden">
+                    <span id="block-badge-label"></span>
+                    <img id="block-badge-aiolia" src="/aiolia-logo" alt="AIOLIA" class="block-badge-aiolia hidden">
+                </div>
             </div>
             <div class="question-text" id="question-text">Loading...</div>
             <div id="aiolia-measure-container" class="aiolia-measure-box hidden">
@@ -1334,30 +1673,179 @@
         let currentAssessmentResult = null;
         let lastAdvancedAnalytics = null;
 
+        // Onboarding routing state
+        let onboardingBackFromProfile = 'step-ai';
+        let selectedTool = 'erl'; // 'erl' | 'healthcare' | 'pub_admin'
+
+        function showOnboardingStep(stepId) {
+            $('.onboarding-step').removeClass('active');
+            $('#' + stepId).addClass('active');
+        }
+
         $(document).ready(function() {
             // Character counter for application description
             $('#application_description').on('input', function() {
                 const length = $(this).val().length;
                 $('#char-count').text(length);
             });
-            
-            // LEA question change handler
-            $("input[name='product_for_LEAs']").change(function() {
-                if ($('#productForLEAsNo').is(':checked')) {
-                    $('#personalDataQuestion').show();
+
+            function updateParticipantBar() {
+                const names = [];
+                $('.participant-name-input').each(function() {
+                    const v = $(this).val().trim();
+                    if (v) names.push(v);
+                });
+                $('#participant-names-display').text(names.join(' · '));
+
+                // Mirror first four names into the picnic-table corners
+                const cornerIds = ['#name-corner-1', '#name-corner-2', '#name-corner-3', '#name-corner-4'];
+                cornerIds.forEach((sel, idx) => {
+                    const el = $(sel);
+                    if (el.length) {
+                        el.text(names[idx] || '');
+                    }
+                });
+            }
+
+            $('#participants-container').on('input', '.participant-name-input', updateParticipantBar);
+
+            $('#btn-add-participant').on('click', function() {
+                const count = $('.participant-name-input').length + 1;
+                const fieldId = `participant-${count}`;
+                const $field = $(`
+                    <div class="question-group">
+                        <label for="${fieldId}">Participant ${count}</label>
+                        <input type="text" id="${fieldId}" name="participants" class="form-input participant-name-input" autocomplete="off" placeholder="First name">
+                    </div>
+                `);
+                $('#participants-container').append($field);
+            });
+
+            // —— Step 1: Welcome
+            $('#btn-begin-erl').on('click', function() {
+                selectedTool = 'erl';
+                $('#pub_admin_route_field').val('no');
+                $('#healthcareRouteNo').prop('checked', true);
+                updateProfileLabels();
+                showOnboardingStep('step-names');
+            });
+            $('#panel-healthcare').on('click', function() {
+                selectedTool = 'healthcare';
+                $('#pub_admin_route_field').val('no');
+                $('#healthcareRouteYes').prop('checked', true);
+                updateProfileLabels();
+                showOnboardingStep('step-names');
+            });
+            $('#panel-pub-admin').on('click', function() {
+                selectedTool = 'pub_admin';
+                $('#pub_admin_route_field').val('yes');
+                $('#healthcareRouteNo').prop('checked', true);
+                updateProfileLabels();
+                showOnboardingStep('step-names');
+            });
+
+            // —— Step 2: Names → next step depends on tool
+            $('#btn-back-from-names').on('click', function() { showOnboardingStep('step-welcome'); });
+            $('#btn-from-names').on('click', function() {
+                if (selectedTool === 'pub_admin' || selectedTool === 'healthcare') {
+                    onboardingBackFromProfile = 'step-names';
+                    showOnboardingStep('step-profile');
                 } else {
-                    $('#personalDataQuestion').hide();
+                    showOnboardingStep('step-healthcare');
                 }
             });
 
-            // Setup form submission
+            // —— Step 3: Healthcare
+            $('#btn-back-from-healthcare').on('click', function() { showOnboardingStep('step-names'); });
+            $('#btn-from-healthcare').on('click', function() {
+                if ($('#healthcareRouteYes').is(':checked')) {
+                    onboardingBackFromProfile = 'step-healthcare';
+                    showOnboardingStep('step-profile');
+                } else {
+                    showOnboardingStep('step-lea');
+                }
+            });
+
+            // —— Step 4: LEA
+            $('#btn-back-from-lea').on('click', function() { showOnboardingStep('step-healthcare'); });
+            $('#btn-from-lea').on('click', function() {
+                if ($('#productForLEAsYes').is(':checked')) {
+                    showOnboardingStep('step-ai');
+                } else {
+                    showOnboardingStep('step-gdpr');
+                }
+            });
+
+            // —— Step 5: GDPR
+            $('#btn-back-from-gdpr').on('click', function() { showOnboardingStep('step-lea'); });
+            $('#btn-from-gdpr').on('click', function() { showOnboardingStep('step-ai'); });
+
+            // —— Step 6: AI
+            $('#btn-back-from-ai').on('click', function() {
+                if ($('#productForLEAsYes').is(':checked')) {
+                    showOnboardingStep('step-lea');
+                } else {
+                    showOnboardingStep('step-gdpr');
+                }
+            });
+            $('#btn-from-ai').on('click', function() {
+                onboardingBackFromProfile = 'step-ai';
+                showOnboardingStep('step-profile');
+            });
+
+            // —— Step 7: Profile — adapt labels based on tool
+            function updateProfileLabels() {
+                if (selectedTool === 'pub_admin') {
+                    $('#profile-step-indicator').text('Step 3 of 3');
+                    $('#product_name_label').text('AI System Name:');
+                    $('#product_name').attr('placeholder', 'e.g. Automated Benefit Eligibility System');
+                    $('#application_description_label').text('System Description (3–4 sentences, max 500 characters):');
+                    $('#application_description').attr('placeholder', 'Briefly describe the AI system, its purpose, the decisions it influences, and the citizen population it affects...');
+                } else if (selectedTool === 'healthcare') {
+                    $('#profile-step-indicator').text('Step 3 of 3');
+                    $('#product_name_label').text('AI System Name:');
+                    $('#product_name').attr('placeholder', 'e.g. Clinical Decision Support System');
+                    $('#application_description_label').text('System Description (3–4 sentences, max 500 characters):');
+                    $('#application_description').attr('placeholder', 'Briefly describe the AI system, its clinical purpose, the patient population it affects, and how clinicians interact with it...');
+                } else {
+                    $('#profile-step-indicator').text('Step 7 of 7');
+                    $('#product_name_label').text('Product/Service Name:');
+                    $('#product_name').attr('placeholder', 'Enter the name of your product or service');
+                    $('#application_description_label').text('Application Description (3–4 sentences, max 500 characters):');
+                    $('#application_description').attr('placeholder', 'Briefly describe your application, its purpose, key features, and target users...');
+                }
+            }
+
+            $('#btn-back-from-profile').on('click', function() {
+                showOnboardingStep(onboardingBackFromProfile);
+            });
+
+            // Form submission (Start Assessment)
             $('#determiningForm').on('submit', function(event) {
                 event.preventDefault();
                 if (isProcessing) return;
-                
+                var $form = $(this);
+                // Sub-tools bypass profiling steps — inject correct hidden values
+                if (selectedTool === 'pub_admin') {
+                    $form.find('input[name="product_for_LEAs"], input[name="uses_personal_data"], input[name="uses_AI"], input[name="healthcare_route"]').remove();
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'product_for_LEAs', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'uses_personal_data', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'uses_AI', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'healthcare_route', value: 'no' }));
+                } else if (selectedTool === 'healthcare') {
+                    $form.find('input[name="product_for_LEAs"], input[name="uses_personal_data"], input[name="uses_AI"], input[name="healthcare_route"]').remove();
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'product_for_LEAs', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'uses_personal_data', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'uses_AI', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'healthcare_route', value: 'yes' }));
+                } else if ($('#healthcareRouteYes').is(':checked')) {
+                    $form.find('input[name="product_for_LEAs"], input[name="uses_personal_data"], input[name="uses_AI"]').remove();
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'product_for_LEAs', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'uses_personal_data', value: 'no' }));
+                    $form.append($('<input>').attr({ type: 'hidden', name: 'uses_AI', value: 'no' }));
+                }
                 showLoading();
                 isProcessing = true;
-                
                 $.ajax({
                     url: '/determine_blocks',
                     type: 'POST',
@@ -1366,6 +1854,7 @@
                     success: function() {
                         hideLoading();
                         $('#setup').hide();
+                        $('#main-layout').removeClass('setup-centered');
                         $('#progress-container').show();
                         chartScores = [4];
                         chartIndicators = [];
@@ -1382,7 +1871,6 @@
                     }
                 });
             });
-
         });
 
         function submitAnswer(answer) {
@@ -1482,12 +1970,37 @@
             });
         }
 
+        const blockLabels = {
+            'zero_case': 'General Ethics',
+            'gdpr_block': 'GDPR',
+            'led_block': 'LED',
+            'ai_block': 'AI Act',
+            'healthcare_ai': 'Healthcare AI'
+        };
+
         function displayQuestion(question, score) {
             console.log('displayQuestion called with:', question, score);
             $('#question-number').text(`Question ${question.number}`);
             $('#question-text').text(question.question);
             $('#current-score').text(`Score: ${parseFloat(score).toFixed(1)}`);
             currentScoreValue = parseFloat(score);
+
+            // Block badge: show current block; for healthcare_ai show AIOLIA logo as flag
+            const block = question.block || '';
+            const label = blockLabels[block] || block;
+            $('#block-badge-label').text(label);
+            const $badge = $('#block-badge');
+            const $logo = $('#block-badge-aiolia');
+            if (block === 'healthcare_ai') {
+                $badge.removeClass('hidden').addClass('healthcare-ai').show();
+                $logo.removeClass('hidden').show();
+            } else if (label) {
+                $badge.removeClass('healthcare-ai').removeClass('hidden').show();
+                $logo.addClass('hidden').hide();
+            } else {
+                $badge.addClass('hidden').hide();
+                $logo.addClass('hidden').hide();
+            }
 
             if (question.aiolia_measure && question.aiolia_measure.text) {
                 $('#aiolia-measure-text').text(`AIOLIA ${question.aiolia_measure.id}: ${question.aiolia_measure.text}`);
@@ -1761,28 +2274,28 @@
         }
 
         function renderRealtimeChart(scores, indicators) {
-            // Show chart only at end-of-assessment
             $('#chart-sidebar').show();
-            
-            // Update chart title with product name
             const productName = $('#product_name').val() || 'Product';
             $('#chart-title').text(`${productName} - Ethics Progress`);
-            const xLabels = (indicators && indicators.length > 0)
-                ? indicators
-                : scores.map((_, idx) => idx + 1);
+            // X-axis: step index (1, 2, 3, ...) for even spacing; show indicator in hover
+            const n = scores.length;
+            const xSteps = Array.from({ length: n }, (_, i) => i + 1);
+            const hoverIndicators = (indicators && indicators.length === n) ? indicators : xSteps.map(String);
 
             const data = [{
-                x: xLabels,
+                x: xSteps,
                 y: scores,
                 mode: 'lines+markers',
                 name: 'LPERL Score',
+                customdata: hoverIndicators,
+                hovertemplate: 'Step %{x}<br>Indicator %{customdata}<br>Score: %{y:.2f}<extra></extra>',
                 line: { color: '#2E86AB', width: 3 },
                 marker: { size: 6, color: '#2E86AB' }
             }];
 
             const layout = {
                 title: `${productName} - Ethics Readiness`,
-                xaxis: { title: 'Indicator' },
+                xaxis: { title: 'Step' },
                 yaxis: { title: 'LPERL Score', range: [0, 4.5] },
                 showlegend: false,
                 height: 250,
@@ -1972,6 +2485,15 @@
             const generatedAt = new Date().toLocaleString();
             const reportDate = new Date().toLocaleDateString();
             const reportTitle = `Exit Report for Ethics Readiness Levels evaluation for ${companyName} at ${reportDate}`;
+            // Collect participant names for inclusion in the PDF
+            const participantNames = [];
+            $('.participant-name-input').each(function () {
+                const v = ($(this).val() || '').trim();
+                if (v) participantNames.push(v);
+            });
+            const participantsLabel = participantNames.length
+                ? participantNames.join(', ')
+                : 'Not recorded';
             const classicChart = await capturePlotlyImage('plotly-chart', 1200, 520);
             const concerns = (currentAssessmentResult && Array.isArray(currentAssessmentResult.top_concerns))
                 ? currentAssessmentResult.top_concerns
@@ -2016,7 +2538,11 @@
                 </head>
                 <body>
                     <h1>${toReportSafeHtml(reportTitle)}</h1>
-                    <div class="meta">Generated: ${toReportSafeHtml(generatedAt)} | Final score: ${toReportSafeHtml(finalScore)}</div>
+                    <div class="meta">
+                        Generated: ${toReportSafeHtml(generatedAt)} |
+                        Final score: ${toReportSafeHtml(finalScore)}<br/>
+                        Participants: ${toReportSafeHtml(participantsLabel)}
+                    </div>
 
                     <div class="card primary">
                         <h2>Expert Recommendations</h2>

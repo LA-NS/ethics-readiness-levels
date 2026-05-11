@@ -170,6 +170,116 @@ INSERT OR REPLACE INTO questions (id, number, question, yes_score, no_score, blo
 (1566, '23.2', 'Does the training include basic concepts of machine learning and AI ethics?', 0, -0.014, 'ai_block'),
 (1567, '23.4', 'Was the AI literacy of affected persons taken into account during the system''s deployment?', 0, -0.005, 'ai_block');
 
+-- Healthcare AI block (AIOLIA) - for healthcare AI systems; standalone evaluation (score range 0–4)
+-- Worst case (all risks triggered, no mitigations) = -4.0; best case = 0.0
+INSERT OR REPLACE INTO questions (id, number, question, yes_score, no_score, block) VALUES
+(2001, '24', 'Does the AI system impact patient autonomy?', -0.25, 0, 'healthcare_ai'),
+(2002, '24.1', 'Have patients been provided with meaningful information about the AI tool to support informed decision-making?', 0.25, 0, 'healthcare_ai'),
+(2003, '24.2', 'Is informed consent obtained before using patient data for AI training or modeling?', 0, -0.15, 'healthcare_ai'),
+(2004, '24.2.1', 'Are there electronic or dynamic consent mechanisms in place allowing patients to opt-out?', 0, -0.05, 'healthcare_ai'),
+(2005, '25', 'Does the AI system automate clinical recommendations or replace clinician judgment?', -0.30, 0, 'healthcare_ai'),
+(2006, '25.1', 'Is the AI tool designed as a complement to clinician judgment rather than a replacement?', 0.15, 0, 'healthcare_ai'),
+(2007, '25.2', 'Can clinicians override the AI system''s recommendations without professional penalty?', 0.15, 0, 'healthcare_ai'),
+(2008, '25.3', 'Is there a risk of automation bias, where clinicians become over-reliant on the AI?', -0.20, 0, 'healthcare_ai'),
+(2009, '25.3.1', 'Beyond training, are there operational safeguards (e.g., mandatory human verification, override documentation, second-reader checks, monitoring) to mitigate automation bias?', 0.20, 0, 'healthcare_ai'),
+(2010, '26', 'Can the AI system''s outputs result in biased or discriminatory healthcare outcomes?', -0.65, 0, 'healthcare_ai'),
+(2011, '26.1', 'Were representative datasets used to train the algorithm across different demographics?', 0.25, 0, 'healthcare_ai'),
+(2012, '26.1.1', 'As an additional step, have you engaged in multi-institutional data collaborations to further reduce underrepresentation of minority groups?', 0.20, 0, 'healthcare_ai'),
+(2013, '26.2', 'Are there regular audits to detect and correct racial or gender bias after deployment?', 0.20, 0, 'healthcare_ai'),
+(2014, '27', 'Does the system process or store patient health data?', -0.30, 0, 'healthcare_ai'),
+(2015, '27.1', 'Are cybersecurity protocols and privacy-preserving measures (such as anonymization) implemented?', 0.15, 0, 'healthcare_ai'),
+(2016, '27.2', 'Has the AI system undergone prospective clinical trials or independent validation to ensure patient safety?', 0.15, 0, 'healthcare_ai'),
+(2017, '27.3', 'Is there a risk the data could be used for unauthorized commercial or secondary purposes?', -0.20, 0, 'healthcare_ai'),
+(2018, '27.3.1', 'Are there institutional safeguards preventing the unauthorized commercialization of patient data?', 0.20, 0, 'healthcare_ai'),
+(2019, '28', 'Do model complexity or design choices prevent clinically useful justification of outputs at the point of care?', -0.40, 0, 'healthcare_ai'),
+(2020, '28.1', 'Can clinicians access clear, case-level rationale they can use to defend and communicate AI-informed decisions?', 0.20, 0, 'healthcare_ai'),
+(2021, '28.2', 'Have developers published documentation on the algorithm''s assumptions, limitations, and data provenance?', 0.20, 0, 'healthcare_ai'),
+(2022, '29', 'Was the AI system developed without formal ethical oversight?', -0.40, 0, 'healthcare_ai'),
+(2023, '29.1', 'Are bioethicists or ethics experts part of the AI development team?', 0.10, 0, 'healthcare_ai'),
+(2024, '29.2', 'Has an algorithmic or human rights impact assessment been conducted before clinical deployment?', 0.10, 0, 'healthcare_ai'),
+(2025, '29.3', 'Do developers use standardized AI ethics checklists and guidelines specific to healthcare?', 0.10, 0, 'healthcare_ai'),
+(2026, '29.4', 'Is there a framework for assigning liability and compensation for AI-induced medical errors?', 0.10, 0, 'healthcare_ai'),
+(2027, '30', 'Is the AI system clinically valid and technically accurate?', 0, -0.50, 'healthcare_ai'),
+(2028, '30.1', 'Does the tool accurately reflect the patient''s clinical state (e.g., identifying findings in chest x-rays or CT scans)?', 0, -0.30, 'healthcare_ai'),
+(2029, '30.2', 'Has the system been tested for accuracy in specific tasks like vessel measurements or treatment planning?', 0, -0.20, 'healthcare_ai'),
+(2030, '31', 'Can the AI system justify its clinical recommendations?', 0, -0.20, 'healthcare_ai'),
+(2031, '31.1', 'Are the AI outputs supported by reasons that align with professional medical standards?', 0, -0.12, 'healthcare_ai'),
+(2032, '31.2', 'For individual recommendations, can the system provide justification grounded in intended use, demonstrated outcome impact, and statistically valid evidence?', 0, -0.08, 'healthcare_ai'),
+(2033, '32', 'Is there evidence that performance differs across clinically relevant sub-populations or atypical anatomies?', -0.30, 0, 'healthcare_ai'),
+(2034, '32.1', 'Has the tool been assessed for performance disparities in patients with rare comorbidities or atypical anatomies?', 0.30, 0, 'healthcare_ai'),
+(2038, '32.1.1', 'Have the identified performance disparities been addressed? For example, through retraining, recalibration, or additional data collection?', 0, -0.15, 'healthcare_ai'),
+(2035, '33', 'Are the AI outputs and documentation accessible within the clinical workflow?', 0, -0.15, 'healthcare_ai'),
+(2036, '33.1', 'Are risk scores, heatmaps, or image overlays presented in a format that fits into a physician''s daily practice?', 0, -0.09, 'healthcare_ai'),
+(2037, '33.2', 'Is the documentation on data provenance and validation accessible to hospital managers and medical regulators?', 0, -0.06, 'healthcare_ai'),
+(2039, '34', 'Is there evidence that the AI delivers measurable operational or clinical value that can justify adoption in settings with limited or no direct reimbursement?', 0, -0.30, 'healthcare_ai');
+
+-- Public Administration AIA block — standalone evaluation (score range 0–4)
+-- 49 indicators across 14 societal dimensions; worst case = -4.0, best case = 0.0
+INSERT OR REPLACE INTO questions (id, number, question, yes_score, no_score, block) VALUES
+-- 101: Legal Basis & Proportionality
+(3001, '101',   'Does the AI system make or substantially influence decisions that directly affect citizens'' legal rights, entitlements, or obligations?', -0.30, 0, 'pub_admin_aia'),
+(3002, '101.1', 'Is there an explicit legal basis authorising the use of AI for this type of decision?', 0.10, 0, 'pub_admin_aia'),
+(3003, '101.2', 'Has a proportionality assessment been conducted to justify the use of AI given the stakes involved for citizens?', 0.10, 0, 'pub_admin_aia'),
+(3004, '101.3', 'Are citizens informed that AI plays a role in decisions that affect them?', 0.10, 0, 'pub_admin_aia'),
+-- 102: Non-Discrimination & Fairness
+(3005, '102',     'Can the AI system produce outcomes that are discriminatory or systematically disadvantage certain demographic groups?', -0.60, 0, 'pub_admin_aia'),
+(3006, '102.1',   'Were the training data and model outputs tested for bias across demographic groups such as age, gender, ethnicity, or socioeconomic status?', 0.30, 0, 'pub_admin_aia'),
+(3007, '102.1.1', 'Have identified biases been addressed? For example, through retraining, reweighting, or process redesign?', 0, -0.15, 'pub_admin_aia'),
+(3008, '102.2',   'Are there ongoing mechanisms to monitor for discriminatory patterns in outcomes after deployment?', 0.30, 0, 'pub_admin_aia'),
+-- 103: Citizen Notice & Transparency
+(3009, '103',   'Are citizens given sufficient information about the role of AI in decisions that affect them?', 0, -0.30, 'pub_admin_aia'),
+(3010, '103.1', 'Are citizens explicitly informed when an AI system is involved in processing their case?', 0, -0.10, 'pub_admin_aia'),
+(3011, '103.2', 'Are citizens informed of the AI system''s known limitations and the possibility of error?', 0, -0.10, 'pub_admin_aia'),
+(3012, '103.3', 'Are citizens informed of the rights available to them in relation to AI-assisted decisions?', 0, -0.10, 'pub_admin_aia'),
+-- 104: Explainability of Decisions
+(3013, '104',   'Can the AI system''s contribution to a specific decision be explained to the citizen it affects?', 0, -0.30, 'pub_admin_aia'),
+(3014, '104.1', 'Are explanations provided in plain language accessible to a general audience without technical knowledge?', 0, -0.15, 'pub_admin_aia'),
+(3015, '104.2', 'Is an explanation available to the citizen upon request without requiring them to take legal action?', 0, -0.15, 'pub_admin_aia'),
+-- 105: Human Review & Formal Appeal
+(3016, '105',     'Can citizens request a review of an AI-assisted decision by a human official?', 0, -0.45, 'pub_admin_aia'),
+(3017, '105.1',   'Is the right to human review communicated to the citizen at the time of the decision?', 0, -0.20, 'pub_admin_aia'),
+(3018, '105.2',   'Is there a formal appeal mechanism through which citizens can contest an AI-assisted decision?', 0, -0.15, 'pub_admin_aia'),
+(3019, '105.2.1', 'Is the appeal process accessible to citizens regardless of their level of digital literacy or internet access?', 0, -0.10, 'pub_admin_aia'),
+-- 106: Meaningful Human Oversight
+(3020, '106',   'Do human officials retain meaningful decision-making authority, rather than routinely deferring to AI outputs?', 0, -0.30, 'pub_admin_aia'),
+(3021, '106.1', 'Are public servants trained to critically evaluate AI recommendations rather than accept them uncritically?', 0, -0.15, 'pub_admin_aia'),
+(3022, '106.2', 'Is there documented evidence that human oversight is exercised in practice, not only stated in policy?', 0, -0.15, 'pub_admin_aia'),
+-- 107: Data Rights & Protection
+(3023, '107',     'Does the system respect citizens'' rights in relation to the personal data it processes?', 0, -0.30, 'pub_admin_aia'),
+(3024, '107.1',   'Is there a clear legal basis for processing each category of personal data used by the system?', 0, -0.10, 'pub_admin_aia'),
+(3025, '107.2',   'Is personal data collection limited to what is strictly necessary for the stated purpose?', 0, -0.10, 'pub_admin_aia'),
+(3026, '107.3',   'Do citizens have enforceable rights to access, correct, and request erasure of their data?', 0, -0.10, 'pub_admin_aia'),
+(3027, '107.3.1', 'Is there a procedure for citizens to exercise these rights without undue administrative burden?', 0, -0.05, 'pub_admin_aia'),
+-- 108: Accuracy & Ongoing Validation
+(3028, '108',     'Has the AI system been validated for accuracy and reliability in the specific public administration context where it is deployed?', 0, -0.30, 'pub_admin_aia'),
+(3029, '108.1',   'Has the system been tested on data representative of the actual population it will affect, including vulnerable groups?', 0, -0.15, 'pub_admin_aia'),
+(3030, '108.2',   'Is performance continuously monitored and reported to oversight bodies after deployment?', 0, -0.10, 'pub_admin_aia'),
+(3031, '108.2.1', 'Are performance reports made publicly accessible in an understandable format?', 0, -0.05, 'pub_admin_aia'),
+-- 109: Democratic Legitimacy & Public Disclosure
+(3032, '109',   'Was the deployment of this AI system subject to democratic or parliamentary scrutiny?', 0, -0.25, 'pub_admin_aia'),
+(3033, '109.1', 'Were affected communities or civil society organisations consulted before the system was deployed?', 0, -0.15, 'pub_admin_aia'),
+(3034, '109.2', 'Is the existence, purpose, and scope of this AI system publicly disclosed in an accessible format?', 0, -0.10, 'pub_admin_aia'),
+-- 110: Independent Audit & Oversight
+(3035, '110',   'Can the AI system be independently audited for fairness, accuracy, and legal compliance?', 0, -0.20, 'pub_admin_aia'),
+(3036, '110.1', 'Is access to algorithmic audits granted to independent oversight or regulatory bodies?', 0, -0.10, 'pub_admin_aia'),
+(3037, '110.2', 'Is there a defined process for acting on audit findings, including remediation timelines?', 0, -0.10, 'pub_admin_aia'),
+-- 111: Vendor & Procurement Accountability
+(3038, '111',   'Was this AI system procured from or developed in collaboration with a private vendor?', -0.15, 0, 'pub_admin_aia'),
+(3039, '111.1', 'Does the procurement contract include clauses requiring transparency, auditability, and liability for harm to citizens?', 0.08, 0, 'pub_admin_aia'),
+(3040, '111.2', 'Does the government retain ownership of the data and the right to switch vendors without loss of functionality?', 0.07, 0, 'pub_admin_aia'),
+-- 112: Digital Inclusion
+(3041, '112',   'Does the AI system risk creating or deepening digital exclusion among citizens?', -0.20, 0, 'pub_admin_aia'),
+(3042, '112.1', 'Are alternative non-digital channels available for citizens who cannot or choose not to interact with the AI system?', 0.10, 0, 'pub_admin_aia'),
+(3043, '112.2', 'Has the system been assessed for accessibility by citizens with disabilities or limited digital literacy?', 0.10, 0, 'pub_admin_aia'),
+-- 113: Liability & Redress
+(3044, '113',   'Is there a designated accountability framework specifying who is responsible when the AI system causes harm to a citizen?', 0, -0.25, 'pub_admin_aia'),
+(3045, '113.1', 'Is there a formal redress or compensation mechanism for citizens harmed by errors in AI-assisted decisions?', 0, -0.15, 'pub_admin_aia'),
+(3046, '113.2', 'Are the accountability and redress arrangements publicly communicated in plain language?', 0, -0.10, 'pub_admin_aia'),
+-- 114: Workforce & Public Servant Impact
+(3047, '114',   'Does deployment of this AI system significantly affect the roles, workload, or required skills of public servants?', -0.10, 0, 'pub_admin_aia'),
+(3048, '114.1', 'Have public servants been consulted on the system''s impact on their work?', 0.05, 0, 'pub_admin_aia'),
+(3049, '114.2', 'Is training and upskilling support provided to public servants whose roles are affected by the system?', 0.05, 0, 'pub_admin_aia');
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_questions_block ON questions(block);
 CREATE INDEX IF NOT EXISTS idx_questions_number ON questions(number);
