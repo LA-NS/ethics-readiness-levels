@@ -151,6 +151,39 @@ This version fixes the issues from the earlier archived implementation:
 6. **✅ Enhanced Scoring**: Professional visualization with LPERL level indicators
 7. **✅ Complete Documentation**: Comprehensive usage and technical documentation
 
+## System Card: ERL Assessment Tool (v0.2)
+
+### **Intended Use**
+The ERL (Ethics Readiness Levels) Assessment Tool is designed for technology developers, researchers, and ethics auditors to evaluate the ethical, legal, and privacy readiness of technology projects, particularly those involving Artificial Intelligence. It provides a structured framework to identify risks and implement ethical design choices throughout the development lifecycle.
+
+### **Technical Specifications**
+- **Framework**: LPERL (Legal, Privacy, Ethical Readiness Level)
+- **Architecture**: Local Flask web application
+- **Database**: SQLite3 for local-first data persistence
+- **Visualization**: Plotly for real-time score progression graphs
+- **AI Integration**: Support for local LLM (e.g., Gemma-3-12b via LM Studio) for contextual help and recommendations
+- **Deployment**: Localhost operation (default port 8080) to ensure data privacy
+
+### **Capabilities**
+- **Dynamic Assessment**: Adapts question flow based on project characteristics (AI, GDPR, LEA, Healthcare).
+- **Real-time Feedback**: Calculates LPERL levels (0-4) dynamically as questions are answered.
+- **Contextual AI Assistance**: Provides AI-generated hints for complex ethics questions using local LLM integration.
+- **Actionable Recommendations**: Generates practical solutions for unrecovered ethical concerns at the end of the assessment.
+- **Visual Analytics**: Interactive score progression charts to track readiness improvements over time.
+- **Export Functionality**: Generates expert review documents for Public Administration AIA indicators.
+
+### **Limitations**
+- **Self-Assessment**: Results depend on the accuracy and honesty of user inputs.
+- **Local LLM Dependency**: AI features require a locally running LLM server (e.g., LM Studio) to be configured.
+- **Snapshot in Time**: The assessment reflects the project's state at the time of evaluation and should be repeated iteratively.
+- **Not Legal Advice**: While based on legal frameworks (GDPR, AI Act), the tool does not provide binding legal compliance certification.
+
+### **Ethical Considerations**
+- **Data Privacy**: All data is stored locally in a SQLite database; no assessment data is transmitted to external servers.
+- **Transparency**: The scoring logic and question weights are based on peer-reviewed academic research.
+- **Accountability**: The tool encourages human-in-the-loop oversight by requiring manual justification for certain AI-driven recommendations.
+- **Bias Awareness**: Includes specific blocks and questions designed to detect and mitigate algorithmic bias.
+
 ## License
 
 Copyright (c) 2023 laurynasadomaitis
