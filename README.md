@@ -153,36 +153,46 @@ This version fixes the issues from the earlier archived implementation:
 
 ## System Card: ERL Assessment Tool (v0.2)
 
-### **Intended Use**
-The ERL (Ethics Readiness Levels) Assessment Tool is designed for technology developers, researchers, and ethics auditors to evaluate the ethical, legal, and privacy readiness of technology projects, particularly those involving Artificial Intelligence. It provides a structured framework to identify risks and implement ethical design choices throughout the development lifecycle.
+### **Intended Purpose**
+The ERL (Ethics Readiness Levels) Assessment Tool serves as a practical implementation of the LPERL framework. Its primary purpose is to:
+- **Democratize Ethics Auditing**: Enable developers and non-experts to conduct sophisticated ethical and legal risk assessments without requiring deep regulatory expertise.
+- **Facilitate Ethics-by-Design**: Provide a structured, iterative workflow that guides project teams from initial risk identification to the implementation of concrete technical and procedural safeguards.
+- **Bridge the Gap Between Theory and Practice**: Translate high-level ethical principles (like those in the AI Act and GDPR) into specific, actionable indicators and technical measures.
+- **Standardize Readiness Reporting**: Offer a quantifiable LPERL level (0-4) that can be used to communicate a project's ethical maturity to stakeholders, auditors, and regulatory bodies.
+
+### **AI Agent Hosting Instructions**
+This tool is designed to be easily hosted and managed by AI coding agents within controlled environments (like sandboxes or local dev environments).
+
+#### **Agent Setup Protocol:**
+1.  **Environment Check**: Verify Python 3.7+ is installed.
+2.  **Dependency Management**: Use the provided `requirements.txt` to install necessary libraries.
+3.  **Database Initialization**: The tool automatically initializes `lperl_local.sqlite` on first run if it doesn't exist.
+4.  **Port Management**: By default, the tool runs on port `8080` (to avoid common macOS AirPlay conflicts on `5000`). Agents should ensure this port is available or use `lsof -i :8080` to find and terminate conflicting processes.
+5.  **Execution Command**:
+    ```bash
+    python3 app.py > app_output.log 2>&1 &
+    ```
+6.  **Verification**: Poll `http://127.0.0.1:8080` until it returns a `200 OK` status before notifying the user.
+
+#### **Agent Capabilities for Maintenance:**
+- **Dynamic Updates**: Agents can modify `schema.sql` or `app.py` to add new assessment blocks or logic and restart the server to apply changes.
+- **Local LLM Bridging**: Agents should facilitate the connection to a local LLM (e.g., via LM Studio on `localhost:1234`) to enable v0.2 AI-assisted features.
 
 ### **Technical Specifications**
-- **Framework**: LPERL (Legal, Privacy, Ethical Readiness Level)
-- **Architecture**: Local Flask web application
-- **Database**: SQLite3 for local-first data persistence
-- **Visualization**: Plotly for real-time score progression graphs
-- **AI Integration**: Support for local LLM (e.g., Gemma-3-12b via LM Studio) for contextual help and recommendations
-- **Deployment**: Localhost operation (default port 8080) to ensure data privacy
+- **Architecture**: Local Flask web application (Local-First).
+- **Database**: SQLite3.
+- **Visualization**: Plotly (v0.2).
+- **AI Backend**: Compatible with OpenAI-style local API endpoints.
 
 ### **Capabilities**
-- **Dynamic Assessment**: Adapts question flow based on project characteristics (AI, GDPR, LEA, Healthcare).
-- **Real-time Feedback**: Calculates LPERL levels (0-4) dynamically as questions are answered.
-- **Contextual AI Assistance**: Provides AI-generated hints for complex ethics questions using local LLM integration.
-- **Actionable Recommendations**: Generates practical solutions for unrecovered ethical concerns at the end of the assessment.
-- **Visual Analytics**: Interactive score progression charts to track readiness improvements over time.
-- **Export Functionality**: Generates expert review documents for Public Administration AIA indicators.
+- **Adaptive Flow**: Hierarchical question navigation (1 -> 1.1 -> 1.1.1).
+- **Domain Specialization**: Blocks for AI Act, GDPR, Law Enforcement (LED), and Healthcare.
+- **Actionable AI Recommendations**: (v0.2) Generates practical solutions for unrecovered ethical concerns.
 
-### **Limitations**
-- **Self-Assessment**: Results depend on the accuracy and honesty of user inputs.
-- **Local LLM Dependency**: AI features require a locally running LLM server (e.g., LM Studio) to be configured.
-- **Snapshot in Time**: The assessment reflects the project's state at the time of evaluation and should be repeated iteratively.
-- **Not Legal Advice**: While based on legal frameworks (GDPR, AI Act), the tool does not provide binding legal compliance certification.
-
-### **Ethical Considerations**
-- **Data Privacy**: All data is stored locally in a SQLite database; no assessment data is transmitted to external servers.
-- **Transparency**: The scoring logic and question weights are based on peer-reviewed academic research.
-- **Accountability**: The tool encourages human-in-the-loop oversight by requiring manual justification for certain AI-driven recommendations.
-- **Bias Awareness**: Includes specific blocks and questions designed to detect and mitigate algorithmic bias.
+### **Limitations & Ethical Considerations**
+- **Data Sovereignty**: Completely offline. No data ever leaves the local machine.
+- **User Responsibility**: The tool is a decision-support system, not an automated compliance officer. Results rely on truthful user input.
+- **Transparency**: All scoring weights and indicators are visible in `schema.sql`.
 
 ## License
 
