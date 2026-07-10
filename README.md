@@ -151,6 +151,49 @@ This version fixes the issues from the earlier archived implementation:
 6. **✅ Enhanced Scoring**: Professional visualization with LPERL level indicators
 7. **✅ Complete Documentation**: Comprehensive usage and technical documentation
 
+## System Card: ERL Assessment Tool (v0.2)
+
+### **Intended Purpose**
+The ERL (Ethics Readiness Levels) Assessment Tool serves as a practical implementation of the LPERL framework. Its primary purpose is to:
+- **Democratize Ethics Auditing**: Enable developers and non-experts to conduct sophisticated ethical and legal risk assessments without requiring deep regulatory expertise.
+- **Facilitate Ethics-by-Design**: Provide a structured, iterative workflow that guides project teams from initial risk identification to the implementation of concrete technical and procedural safeguards.
+- **Bridge the Gap Between Theory and Practice**: Translate high-level ethical principles (like those in the AI Act and GDPR) into specific, actionable indicators and technical measures.
+- **Standardize Readiness Reporting**: Offer a quantifiable LPERL level (0-4) that can be used to communicate a project's ethical maturity to stakeholders, auditors, and regulatory bodies.
+
+### **AI Agent Hosting Instructions**
+This tool is designed to be easily hosted and managed by AI coding agents within controlled environments (like sandboxes or local dev environments).
+
+#### **Agent Setup Protocol:**
+1.  **Environment Check**: Verify Python 3.7+ is installed.
+2.  **Dependency Management**: Use the provided `requirements.txt` to install necessary libraries.
+3.  **Database Initialization**: The tool automatically initializes `lperl_local.sqlite` on first run if it doesn't exist.
+4.  **Port Management**: By default, the tool runs on port `8080` (to avoid common macOS AirPlay conflicts on `5000`). Agents should ensure this port is available or use `lsof -i :8080` to find and terminate conflicting processes.
+5.  **Execution Command**:
+    ```bash
+    python3 app.py > app_output.log 2>&1 &
+    ```
+6.  **Verification**: Poll `http://127.0.0.1:8080` until it returns a `200 OK` status before notifying the user.
+
+#### **Agent Capabilities for Maintenance:**
+- **Dynamic Updates**: Agents can modify `schema.sql` or `app.py` to add new assessment blocks or logic and restart the server to apply changes.
+- **Local LLM Bridging**: Agents should facilitate the connection to a local LLM (e.g., via LM Studio on `localhost:1234`) to enable v0.2 AI-assisted features.
+
+### **Technical Specifications**
+- **Architecture**: Local Flask web application (Local-First).
+- **Database**: SQLite3.
+- **Visualization**: Plotly (v0.2).
+- **AI Backend**: Compatible with OpenAI-style local API endpoints.
+
+### **Capabilities**
+- **Adaptive Flow**: Hierarchical question navigation (1 -> 1.1 -> 1.1.1).
+- **Domain Specialization**: Blocks for AI Act, GDPR, Law Enforcement (LED), and Healthcare.
+- **Actionable AI Recommendations**: (v0.2) Generates practical solutions for unrecovered ethical concerns.
+
+### **Limitations & Ethical Considerations**
+- **Data Sovereignty**: Completely offline. No data ever leaves the local machine.
+- **User Responsibility**: The tool is a decision-support system, not an automated compliance officer. Results rely on truthful user input.
+- **Transparency**: All scoring weights and indicators are visible in `schema.sql`.
+
 ## License
 
 Copyright (c) 2023 laurynasadomaitis
